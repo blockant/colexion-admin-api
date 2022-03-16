@@ -2,11 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Link, useParams, Navigate } from 'react-router-dom';
 import { connect, useSelector } from "react-redux";
 import PropTypes from 'prop-types'
+import { uploadNft } from "../actions/nft";
 
-const AdminPanel = () => {
-
-    // const { user, isAuthenticated } = useSelector((state) => state.auth);
-    // const { name, email, external_urls } = user;
+const AdminPanel = ({ uploadNft }) => {
 
     const [success, setSuccess] = useState(false);
     const [enteredName, setEnteredName] = useState('');
@@ -51,7 +49,8 @@ const AdminPanel = () => {
 
     const onFormSubmitHandler = async (e) => {
         e.preventDefault();
-        console.log(enteredName, enteredBio, enteredCeleb, nftData);
+        // console.log(enteredName, enteredBio, enteredCeleb, nftData);
+        await uploadNft("", enteredName, enteredBio, enteredCeleb, nftData)
         setSuccess(!success);
     };
 
@@ -94,23 +93,6 @@ const AdminPanel = () => {
                         </div>
                         <div className="col-xl-9 col-lg-8 col-md-12 col-12">
                             <div className="form-upload-profile">
-                                {/* <h4 className="title-create-item">Choice your Cover image</h4>
-                                <div className="option-profile clearfix">
-                                    <form action="#">
-                                        <label className="uploadFile">
-                                            <input type="file" className="inputfile form-control" name="file"
-                                                accept='image/*'
-                                                onChange={bannerChangeHandler} />
-                                        </label>
-                                    </form>
-                                    <div className="image">
-                                        <img src={bg1} alt="Axies" />
-                                    </div>
-                                    <div className="image style2">
-                                        <img src={bg2} alt="Axies" />
-                                    </div>
-                                </div> */}
-
                                 <form method="post" onSubmit={onFormSubmitHandler} autoComplete='off' className="form-profile">
                                     <div className="form-infor-profile">
                                         <div className="info-account">
@@ -124,7 +106,7 @@ const AdminPanel = () => {
                                             </fieldset>
                                             <fieldset>
                                                 <h4 className="title-infor-account">NFT Owner</h4>
-                                                <input type="text" value="Colexion" readonly />
+                                                <input type="text" value="Colexion" readOnly />
                                             </fieldset>
                                             <fieldset>
                                                 <h4 className="title-infor-account">Celeb Name</h4>
@@ -144,9 +126,9 @@ const AdminPanel = () => {
                                         </div>
                                     </div>
                                     {formIsValid ? (<>
-                                        <button className="tf-button-submit mg-t-15" name='submit' type="submit">Upload NTF</button>
+                                        <button className="tf-button-submit mg-t-15" name='submit' type="submit">Pin to IPFS</button>
                                     </>) : (<>
-                                        <button className="tf-button-submit mg-t-15" name='submit' type="submit" disabled>Upload NTF</button>
+                                        <button className="tf-button-submit mg-t-15" name='submit' type="submit" disabled>Pin to IPFS</button>
                                     </>)}
                                 </form>
                             </div>
@@ -164,7 +146,7 @@ const mapStateToProps = (state) => ({
 });
 
 const mapDispatchToProps = {
-
+    uploadNft
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(AdminPanel);
