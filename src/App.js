@@ -7,6 +7,8 @@ import store from "./store";
 import { BrowserRouter as Router, Route, Routes, Switch, useLocation } from "react-router-dom";
 import AllUser from './pages/AllUser';
 import AdminPanel from './pages/AdminPanel';
+import Tempcelebs from './pages/Tempcelebs';
+import Allcelebs from './pages/Allcelebs';
 
 function App() {
 	return (
@@ -18,6 +20,8 @@ function App() {
 							<Route path="/" element={<Paperbase />} />
 							<Route path="/users" element={<AllUser />} />
 							<Route path="/nft/create" element={<AdminPanel />} />
+							<Route path="/tempceleb" element={<Tempcelebs />} />
+							<Route path="/allcelebs" element={<Allcelebs />} />
 							{/* <Route exact path="/login" component={LoginComponent} />
 						<Route exact path="/signup" component={SignUpComponent} />
 						<Route exact path="/marketplace" component={GameList} />

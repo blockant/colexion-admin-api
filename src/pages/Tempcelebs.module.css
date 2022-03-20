@@ -1,0 +1,26 @@
+.form{
+    border: 1px solid black;
+    position: absolute;
+    border-radius: 20px;
+    top:50%;
+    left: 55%;
+    transform: translate(-50%, -50%);
+    margin: auto;
+    display:flex;
+    text-align: left;
+    align-items: left;
+    justify-content: left;
+    flex-direction: column;
+    width:25%;
+    /* height:45%; */
+    font-size:25px;
+    padding: 20px;
+    margin-top: 30px;
+}
+.name, .categories, .tier , .btn{
+    padding:10px;
+}
+.btn{
+    width:fit-content;
+    margin:auto;
+}

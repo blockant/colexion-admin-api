@@ -1,6 +1,7 @@
 import { NO_ACTION, NFT_UPLOAD, ERROR } from '../actions/types'
 
 const initialState = {
+    nftStore:null,
     errorMessage: null
 };
 
@@ -9,7 +10,8 @@ const nfts = (state = initialState, action) => {
     switch (type) {
         case NFT_UPLOAD:
             return {
-                ...state
+                ...state,
+                nftStore:payload
             }
         case ERROR:
             return {

@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useParams, Navigate } from 'react-router-dom';
 import { connect, useSelector } from "react-redux";
+import {FormControl, InputLabel, TextField, Button} from "@mui/material";
 import PropTypes from 'prop-types'
 import { uploadNft } from "../actions/nft";
+import styles from "./AdminPanel.module.css";
+import axios from "axios";
 
 const AdminPanel = ({ uploadNft }) => {
 
@@ -10,10 +13,10 @@ const AdminPanel = ({ uploadNft }) => {
     const [enteredName, setEnteredName] = useState('');
     const [enteredCeleb, setEnteredCeleb] = useState("Random");
     const [enteredBio, setEnteredBio] = useState('');
-
+    const [enteredAddress,setEnteredAddress] = useState('');
     const [nftImg, setNftImg] = useState(null);
     const [nftData, setNftData] = useState(null);
-
+    let contentHash,fileURL;
     const nameChangeHandler = (event) => {
         setEnteredName(event.target.value)
     }
@@ -33,6 +36,10 @@ const AdminPanel = ({ uploadNft }) => {
         // console.log(event.target.files[0])
     }
 
+    const addressChangeHandler = (e) =>{
+        setEnteredAddress(e.target.value);
+    }
+
     const [formIsValid, setFormValid] = useState(false)
 
     useEffect(() => {
@@ -50,7 +57,11 @@ const AdminPanel = ({ uploadNft }) => {
     const onFormSubmitHandler = async (e) => {
         e.preventDefault();
         // console.log(enteredName, enteredBio, enteredCeleb, nftData);
-        await uploadNft("", enteredName, enteredBio, enteredCeleb, nftData)
+        const res = await uploadNft(enteredName, enteredBio, nftData)
+        contentHash=res.data.nft.content_hash;
+        fileURL = "https://gateway.pinata.cloud/ipfs/"+contentHash;
+        console.log(contentHash);
+        console.log(fileURL);
         setSuccess(!success);
     };
 
@@ -63,7 +74,9 @@ const AdminPanel = ({ uploadNft }) => {
     setTimeout(() => { if (success) { setSuccess(!success) } }, 3000);
 
     return (
-        <div>
+        <>
+        <main className={styles.main}>
+        <div className={styles.left}>
             {/* <Header /> */}
             <div className="tf-create-item tf-section">
                 <div className="themesflat-container">
@@ -137,6 +150,15 @@ const AdminPanel = ({ uploadNft }) => {
                 </div>
             </div>
         </div>
+        <div className="right">
+                <InputLabel htmlFor="my-input" onChange={addressChangeHandler}>Address</InputLabel>
+                <TextField id="Address" variant="outlined" />
+                <div>
+                    <Button variant="contained">Mint NFT</Button>
+                </div>
+        </div>
+        </main>
+        </>
     );
 }
 

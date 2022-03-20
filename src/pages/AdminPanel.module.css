@@ -1,0 +1,11 @@
+.main {
+    display: flex;
+    flex-direction: row;
+}
+.left {
+    width:50%;
+    height: 100vh;
+}
+.right {
+    width:50%;
+}

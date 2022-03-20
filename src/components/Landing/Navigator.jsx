@@ -3,6 +3,7 @@ import Divider from "@mui/material/Divider";
 import Drawer from "@mui/material/Drawer";
 import List from "@mui/material/List";
 import Box from "@mui/material/Box";
+import {Link} from "react-router-dom";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
@@ -24,6 +25,7 @@ const categories = [
     children: [
       {
         id: "All Celebrities",
+        href:"/tempceleb"
       },
       { id: "All User",
         href:"/users"
@@ -36,7 +38,7 @@ const categories = [
     icon: <ImageIcon/>,
     children: [
       { id: "Minted NFT's" },
-      { id: "Mint NFT" },
+      { id: "Mint NFT", href:"/nft/create" },
       { id: "NFT Sold" },
       { id: "Payments" },
     ],
@@ -82,11 +84,11 @@ export default function Navigator(props) {
             </ListItem>
             {children.map(({ id: childId, href }) => (
               <ListItem disablePadding key={childId} onClick={()=>navigationHandler(href)}>
-                <ListItemButton sx={item}>
+               <Link to={href   || '/'}> <ListItemButton sx={item}>
                 <ListItemText>{childId}</ListItemText>
                   {/* <Link to={href || '/'}></Link> */}
-                </ListItemButton>
-              </ListItem>
+                </ListItemButton> </Link>
+               </ListItem>
             ))}
 
             <Divider sx={{ mt: 2 }} />
