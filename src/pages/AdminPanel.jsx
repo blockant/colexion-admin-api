@@ -150,11 +150,11 @@ const AdminPanel = ({ uploadNft }) => {
                 </div>
             </div>
         </div>
-        <div className="right">
-                <InputLabel htmlFor="my-input" onChange={addressChangeHandler}>Address</InputLabel>
-                <TextField id="Address" variant="outlined" />
+        <div className={styles.right}>
+                <TextField id="Address" label="Address" variant="outlined" style={{width:"69%", margin:"0 auto"}}/>
                 <div>
-                    <Button variant="contained">Mint NFT</Button>
+                    <Button className={styles.btn} variant="contained">Mint ERC721</Button>
+                    <Button className={styles.btn-2} variant="contained">Mint ERC1155</Button>
                 </div>
         </div>
         </main>
