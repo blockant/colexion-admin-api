@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useParams, Navigate } from 'react-router-dom';
 import { connect, useSelector } from "react-redux";
-import {FormControl, InputLabel, TextField, Button} from "@mui/material";
+import {FormControl, InputLabel, TextField, Button,TextareaAutosize} from "@mui/material";
 import PropTypes from 'prop-types'
 import { uploadNft } from "../actions/nft";
 import styles from "./AdminPanel.module.css";
@@ -94,9 +94,12 @@ const AdminPanel = ({ uploadNft }) => {
                                 <div className="card-media">
                                     <img id="profileimg" src={nftImg} alt="Axies" />
                                 </div>
-                                <div id="upload-profile">
-                                    <Link to="#" className="btn-upload">
-                                        Upload NFT </Link>
+                                <div id="upload-profile" className={styles.upload_profile} >
+                                    <div>
+                                    <Link to="#" className={styles.btn_upload_nft}>
+                                        Upload NFT: 
+                                    </Link>
+                                    </div>
                                     <input id="tf-upload-img" type="file" name="profile"
                                         accept='image/*'
                                         onChange={nftChangeHandler}
@@ -109,39 +112,34 @@ const AdminPanel = ({ uploadNft }) => {
                                 <form method="post" onSubmit={onFormSubmitHandler} autoComplete='off' className="form-profile">
                                     <div className="form-infor-profile">
                                         <div className="info-account">
-                                            <h4 className="title-create-item">NFT info</h4>
-                                            <fieldset>
-                                                <h4 className="title-infor-account">NFT name</h4>
-                                                <input type="text" placeholder="Trista Francis"
-                                                    value={enteredName}
-                                                    onChange={nameChangeHandler}
-                                                    required />
-                                            </fieldset>
-                                            <fieldset>
-                                                <h4 className="title-infor-account">NFT Owner</h4>
-                                                <input type="text" value="Colexion" readOnly />
-                                            </fieldset>
-                                            <fieldset>
-                                                <h4 className="title-infor-account">Celeb Name</h4>
-                                                <input type="email"
-                                                    value={enteredCeleb}
-                                                    readOnly />
-                                            </fieldset>
-                                            <fieldset>
-                                                <h4 className="title-infor-account">Description</h4>
-                                                <textarea tabIndex="4" rows="12"
-                                                    placeholder='Describe this NFT...'
-                                                    value={enteredBio}
+                                            
+                                            <div className={styles.nft}>
+                                                <h2 className="title-create-item">NFT info</h2>
+                                                <div className={styles.nftname}>
+                                                    <TextField id="Address" label="NFT Name" variant="outlined" onChange={nameChangeHandler} style={{width:"80%", margin:"0 auto"}}/>
+                                                </div>
+                                                <div className={styles.nftowner}>
+                                                    <TextField id="Address" label="NFT Owner" value="colexion"  variant="outlined" style={{width:"80%", margin:"0 auto"}}/>
+                                                </div>
+                                                <div className={styles.celebrity}>
+                                                    <TextField id="Address" label="Celebrity Name" variant="outlined" style={{width:"80%", margin:"0 auto"}}/>
+                                                </div>
+                                                <div className={styles.description}>
+                                                    <TextareaAutosize
+                                                    aria-label="Description"
+                                                    minRows={6}
                                                     onChange={bioChangeHandler}
-                                                >
-                                                </textarea>
-                                            </fieldset>
+                                                    placeholder="Description"
+                                                    style={{ width: "80%" }}
+                                                    />
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                     {formIsValid ? (<>
-                                        <button className="tf-button-submit mg-t-15" name='submit' type="submit">Pin to IPFS</button>
+                                        <Button className={styles.bt} name='submit' variant="contained">Pin to IPFS</Button>
                                     </>) : (<>
-                                        <button className="tf-button-submit mg-t-15" name='submit' type="submit" disabled>Pin to IPFS</button>
+                                        <Button className={styles.bt} name='submit' variant="contained" disabled>Pin to IPFS</Button>
                                     </>)}
                                 </form>
                             </div>
@@ -151,7 +149,7 @@ const AdminPanel = ({ uploadNft }) => {
             </div>
         </div>
         <div className={styles.right}>
-                <TextField id="Address" label="Address" variant="outlined" style={{width:"69%", margin:"0 auto"}}/>
+                <TextField id="Address" label="Address" variant="outlined" style={{width:"69%", margin:"0 auto"}} onChange={addressChangeHandler}/>
                 <div>
                     <Button className={styles.btn} variant="contained">Mint ERC721</Button>
                     <Button className={styles.btn-2} variant="contained">Mint ERC1155</Button>
