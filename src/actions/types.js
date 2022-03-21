@@ -4,3 +4,6 @@ export const NO_ACTION = "NO_ACTION"
 
 export const NFT_UPLOAD = "NFT_UPLOAD"
 export const ERROR = "ERROR"
+
+export const ADD_CELEB= "ADD_CELEB"
+export const ALL_CELEBS = "ALL_CELEBS"

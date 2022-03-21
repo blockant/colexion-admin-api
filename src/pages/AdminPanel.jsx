@@ -14,9 +14,10 @@ const AdminPanel = ({ uploadNft }) => {
     const [enteredCeleb, setEnteredCeleb] = useState("Random");
     const [enteredBio, setEnteredBio] = useState('');
     const [enteredAddress,setEnteredAddress] = useState('');
+    const [fileURL,setFileURL] = useState('');
     const [nftImg, setNftImg] = useState(null);
     const [nftData, setNftData] = useState(null);
-    let contentHash,fileURL;
+    let contentHash;
     const nameChangeHandler = (event) => {
         setEnteredName(event.target.value)
     }
@@ -59,11 +60,12 @@ const AdminPanel = ({ uploadNft }) => {
         // console.log(enteredName, enteredBio, enteredCeleb, nftData);
         const res = await uploadNft(enteredName, enteredBio, nftData)
         contentHash=res.data.nft.content_hash;
-        fileURL = "https://gateway.pinata.cloud/ipfs/"+contentHash;
+        setFileURL("https://gateway.pinata.cloud/ipfs/"+contentHash);
         console.log(contentHash);
         console.log(fileURL);
         setSuccess(!success);
     };
+    console.log(fileURL);
 
     // useEffect(async () => {
     //     await loadUser(jwt_token)
@@ -137,7 +139,7 @@ const AdminPanel = ({ uploadNft }) => {
                                         </div>
                                     </div>
                                     {formIsValid ? (<>
-                                        <Button className={styles.bt} name='submit' variant="contained">Pin to IPFS</Button>
+                                        <Button className={styles.bt} onClick={onFormSubmitHandler}  name='submit' variant="contained">Pin to IPFS</Button>
                                     </>) : (<>
                                         <Button className={styles.bt} name='submit' variant="contained" disabled>Pin to IPFS</Button>
                                     </>)}
