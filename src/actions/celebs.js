@@ -31,8 +31,8 @@ export const addCeleb = (name, tier, category) => async (dispatch) => {
 export const getAllCelebs = (page, limit) => async (dispatch) => {
     try {
         const params = {
-            page: page || 1,
-            limit: limit || 10,
+            page: 1,
+            limit: 1000,
             paginate: 'false'
         }
         const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/v1/celeb`, { params: params });

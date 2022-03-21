@@ -69,8 +69,8 @@ const addCelebHandler=async(e)=>{
                     onChange={selectCelebrity}
                   >
                     {
-                      celebList.map((celeb) => 
-                        <MenuItem value={celeb.name}> {celeb.name}-{celeb.category},{celeb.tier} </MenuItem> 
+                      celebList.map((celeb, idx) => 
+                        <MenuItem value={celeb.name} key={idx}> {celeb.name}-{celeb.category},{celeb.tier} </MenuItem> 
                       )
                     }
                       {/* <MenuItem value={1}>Adam Zampa-Sports,Tier-2</MenuItem>
