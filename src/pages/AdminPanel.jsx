@@ -7,7 +7,7 @@ import { uploadNft } from "../actions/nft";
 import styles from "./AdminPanel.module.css";
 import axios from "axios";
 
-const AdminPanel = ({ uploadNft }) => {
+const AdminPanel = ({token,uploadNft }) => {
 
     const [success, setSuccess] = useState(false);
     const [enteredName, setEnteredName] = useState('');
@@ -58,7 +58,7 @@ const AdminPanel = ({ uploadNft }) => {
     const onFormSubmitHandler = async (e) => {
         e.preventDefault();
         // console.log(enteredName, enteredBio, enteredCeleb, nftData);
-        const res = await uploadNft(enteredName, enteredBio, nftData)
+        const res = await uploadNft(token,enteredName, enteredBio, nftData)
         contentHash=res.data.nft.content_hash;
         setFileURL("https://gateway.pinata.cloud/ipfs/"+contentHash);
         console.log(contentHash);
@@ -164,7 +164,7 @@ const AdminPanel = ({ uploadNft }) => {
 
 
 const mapStateToProps = (state) => ({
-
+    token: state.auth.jwt_token
 });
 
 const mapDispatchToProps = {

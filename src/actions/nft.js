@@ -2,9 +2,9 @@ import axios from "axios";
 import { NFT_UPLOAD, ERROR } from "./types";
 
 // Post NFTs
-export const uploadNft = (name, bio, nftData) => async (dispatch) => {
+export const uploadNft = (token,name, bio, nftData) => async (dispatch) => {
     const body = JSON.stringify({ name, bio });
-    console.log(name, bio, nftData)
+    console.log(token,name, bio, nftData)
 
     const formData = new FormData();
     formData.append('file', nftData);
@@ -14,7 +14,8 @@ export const uploadNft = (name, bio, nftData) => async (dispatch) => {
     try {
         const config = {
             headers: {
-                "Content-Type": "multipart/form-data"
+                "Content-Type": "multipart/form-data",
+                "Authorization": `Bearer ${token}`
             },
         };
 

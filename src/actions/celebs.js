@@ -1,15 +1,16 @@
 import axios from "axios";
-import { ADD_CELEB,ALL_CELEBS,NO_ACTION, ERROR } from "./types";
+import { ADD_CELEB,DELETE_CELEB,UPDATE_CELEB,ALL_CELEBS,NO_ACTION, ERROR } from "./types";
 
 // Add celebs
-export const addCeleb = (name, tier, category) => async (dispatch) => {
+export const addCeleb = (token,name, tier, category) => async (dispatch) => {
     const body = JSON.stringify({ name, tier, category });
     console.log(name, tier, category);
 
     try {
         const config = {
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
             },
         };
 
@@ -28,22 +29,79 @@ export const addCeleb = (name, tier, category) => async (dispatch) => {
     }
 };
 
-export const getAllCelebs = (page, limit) => async (dispatch) => {
+export const getAllCelebs = (token, page, limit) => async (dispatch) => {
     try {
-        const params = {
-            page: 1,
-            limit: 1000,
-            paginate: 'false'
+        const config = {
+            headers: {
+                "Content-Type": "application/json",
+				"Authorization": `Bearer ${token}`
+			},
+            params: {
+                paginate: false
+            }
         }
-        const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/v1/celeb`, { params: params });
+        const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/v1/celeb`,config);
         console.log(res);
         dispatch({
             type: ALL_CELEBS,
             payload: res.data.foundCelebs
         });
-        return res.data.foundCelebs.docs;
+        return res.data.foundCelebs;
     } catch (err) {
         console.log(err)
         dispatch({ type: NO_ACTION });
+    }
+}
+
+export const deleteCeleb =(token, id) => async(dispatch) =>{
+    try {
+        const config = {
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            },
+        };
+
+        const res = await axios.delete(`${process.env.REACT_APP_API_URL}/api/v1/celeb/${id}`, config);
+        console.log(res);
+        dispatch({
+            type: DELETE_CELEB,
+            payload: {id}
+        });
+    } catch (err) {
+        console.log(err)
+        dispatch({
+            type: ERROR,
+            payload: err.response.data
+        })
+    }
+}
+
+export const updateCeleb =(token, id, name, tier, category) => async(dispatch) =>{
+    console.log(token, id, name, tier, category);
+    const body = JSON.stringify({ name, tier, category });
+    console.log(id);
+    try {
+        const config = {
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            },
+        };
+
+        const res = await axios.put(`${process.env.REACT_APP_API_URL}/api/v1/celeb/${id}`, body, config);
+        console.log(res);
+        // navigate("/allceleb");
+
+        // dispatch({
+        //     type: UPDATE_CELEB,
+        //     payload: res
+        // });
+    } catch (err) {
+        console.log(err)
+        dispatch({
+            type: ERROR,
+            payload: err.response.data
+        })
     }
 }
