@@ -3,6 +3,7 @@ export const SET_METAMASK_ADDRESS = "SET_METAMASK_ADDRESS"
 export const NO_ACTION = "NO_ACTION"
 
 export const NFT_UPLOAD = "NFT_UPLOAD"
+export const ALL_NFTS="ALL_NFTS" 
 export const ERROR = "ERROR"
 
 export const ADD_CELEB= "ADD_CELEB"

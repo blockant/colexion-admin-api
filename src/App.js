@@ -12,6 +12,7 @@ import { LOGIN_SUCCESS } from './actions/types'
 import Login from './pages/Login'
 import ProtectedRoutes from './pages/Protectedroute';
 import Update from './pages/Updateceleb';
+import AllNFT from './pages/AllNFT';
 
 function App() {
 	if (localStorage.getItem("user") && localStorage.token) {
@@ -34,6 +35,7 @@ function App() {
 							/>
 							<Route path="/login" element={<Login />} />
 							<Route path="/users" element={<AllUser />} />
+							<Route path="/nft" element={<AllNFT />} />
 							<Route path="/nft/create" element={<AdminPanel />} />
 							<Route path="/addceleb" element={<Addceleb />} />
 							<Route path="/registerceleb" element={<Registerceleb />} />

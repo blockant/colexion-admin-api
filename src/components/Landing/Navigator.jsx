@@ -33,6 +33,7 @@ const categories = [
     id: "NFT",
     icon: <ImageIcon/>,
     children: [
+      { id: "All NFT's" },
       { id: "Minted NFT's" },
       { id: "Mint NFT", href:"/nft/create" },
       { id: "NFT Sold" },

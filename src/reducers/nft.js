@@ -1,8 +1,9 @@
-import { NO_ACTION, NFT_UPLOAD, ERROR } from '../actions/types'
+import { NO_ACTION, NFT_UPLOAD, ERROR, ALL_NFTS } from '../actions/types'
 
 const initialState = {
     nftStore:null,
-    errorMessage: null
+    errorMessage: null,
+    nft_list:[]
 };
 
 const nfts = (state = initialState, action) => {
@@ -17,6 +18,11 @@ const nfts = (state = initialState, action) => {
             return {
                 ...state,
                 errorMessage: payload
+            }
+        case ALL_NFTS:
+            return {
+                ...state,
+                nft_list: payload
             }
         case NO_ACTION:
         default:
