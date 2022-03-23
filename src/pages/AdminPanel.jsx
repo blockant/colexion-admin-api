@@ -19,7 +19,18 @@ const AdminPanel = ({ uploadNft }) => {
     const [fileURL,setFileURL] = useState('');
     const [nftImg, setNftImg] = useState(null);
     const [nftData, setNftData] = useState(null);
-    let contentHash;
+    const [contentHash,setContenthash]=useState('')
+    const [tokenid,setTokenid]=useState('')
+    //variable to store TokenID
+    
+    const payload = 
+    {
+        content_hash:contentHash,
+        tokenid:tokenid,
+        owner_address:enteredAddress
+    }
+    const res = axios.put(`${process.env.REACT_APP_API_URL}/api/v1/nft`,payload).then(res => console.log(res))
+    console.log(res);
     const nameChangeHandler = (event) => {
         setEnteredName(event.target.value)
     }
@@ -60,14 +71,16 @@ const AdminPanel = ({ uploadNft }) => {
     const onFormSubmitHandler = async (e) => {
         e.preventDefault();
         // console.log(enteredName, enteredBio, enteredCeleb, nftData);
-        const res = await uploadNft(enteredName, enteredBio, nftData)
-        contentHash=res.data.nft.content_hash;
-        setFileURL("https://gateway.pinata.cloud/ipfs/"+contentHash);
+        uploadNft(enteredName, enteredBio, nftData).then(res => {console.log(res); setFileURL("https://gateway.pinata.cloud/ipfs/" + res.data.nft.content_hash);
+        setContenthash(res.data.nft.content_hash);
+        setSuccess(!success);});
+       // const content=res.data.nft.content_hash;
+        //setFileURL("https://gateway.pinata.cloud/ipfs/"+content);
         //console.log(contentHash);
         //console.log(fileURL);
-        setSuccess(!success);
+        
     };
-    //console.log(fileURL);
+    console.log(contentHash);
 
     const mintNFT = async (event) => {
         try{
@@ -84,40 +97,38 @@ const AdminPanel = ({ uploadNft }) => {
             const web3 = window.web3;
 
             //deployed contract address :: 0x2496480d827E12aCAc35aA21a6Ec5b3D02e6816E
-            const contract_address = "0x2496480d827E12aCAc35aA21a6Ec5b3D02e6816E";
+            const contract_address = "0x2250F5Fd2Ef97A9872423142b31C327d60CDcef6";
             //current wallet address
             const accounts = await web3.eth.getAccounts();
             //default account who will be taking actions
             web3.eth.defaultAccount = accounts[0];
             console.log("Default Acoount : "+ accounts[0]);
             
-            //address (to) for which NFT will be minted
-            // const to_address = enteredAddress;
+            //entered address from UI :: (to_account) for which NFT will be minted
             console.log(enteredAddress);
-            // console.log("Address where NFT is minted to: "+to_address);
 
             //creating instance of smart contract
-            const med = new web3.eth.Contract(abi,contract_address, {
-                //string:: gas price in wei to use for transactions.
-                //gasPrice: '100000000000',
-                //number:: maximum gas provided for a transaction(gas limit).
-                //gas: 500000
-            });
-            console.log("hi!!!!");
+            const med = new web3.eth.Contract(abi,contract_address, {});
 
-            //two parameters :: inputAddress && IPFSURL(fileURL)
+            //IPFS file URL
             console.log("URL: "+fileURL);
-            const receipt = await med.methods.mintByOwner(accounts[0],fileURL).
+            //minting NFT here two parameters :: enteredAddress && IPFSURL(fileURL)
+            const receipt = await med.methods.mintByOwner(enteredAddress,"fileURL").
 	        send({from:web3.eth.defaultAccount},function(error,transactionHash){
-		    console.log("hello!!!");
+		    
             if(!error){
 			    console.log("Transaction Hash of Minting: "+transactionHash);
 		    } else {
 		        console.log(error);
 		    }
             });
-            console.log("Receipt from the event: "+receipt.events);
-
+            //printing the log of transaction
+            console.log("Receipt from the event: ", receipt);
+            //TokenID;
+            //console.log("TokenID ", receipt.events.Transfer.returnValues['2']);
+            const TOKENID = receipt.events.Transfer.returnValues['2'];
+            setTokenid(TOKENID);
+            console.log("Token ID: ", TOKENID);
             } catch (error) {
                 console.log("caught", error);
             }
