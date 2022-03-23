@@ -7,8 +7,8 @@ import Paperbase from '../components/Landing/Paperbase';
 import styles from "./Tempcelebs.module.css";
 import { addCeleb } from '../actions/celebs';
 
-const Tempcelebs=({ addCeleb })=>{
-  let navigate = useNavigate();
+const Addceleb=({ token,addCeleb })=>{
+  const navigate = useNavigate();
   const [name,setName] = useState('');
   const [tier,setTier] = useState("Tier-1");
   const [category,setCategory] = useState("Sports");
@@ -25,9 +25,12 @@ const Tempcelebs=({ addCeleb })=>{
 
   const submitHandler=async(e)=>{
     e.preventDefault();
-    await addCeleb(name,tier,category);
-    navigate('/allcelebs');
-
+    await addCeleb(token,name,tier,category);
+    window.alert("Celeb added successfully!")
+    setName('');
+    setTier("Tier-1");
+    setCategory("Sports")
+    navigate("/allceleb")
   }
   return(
     <Paperbase>
@@ -46,7 +49,10 @@ const Tempcelebs=({ addCeleb })=>{
             >
               <MenuItem value="Sports">Sports</MenuItem>
               <MenuItem value="Art">Art</MenuItem>
-              <MenuItem value="Photography">Photography</MenuItem>
+              <MenuItem value="Music">Music</MenuItem>
+              <MenuItem value="Domain Names">Domain Names</MenuItem>
+              <MenuItem value="Trading Cards">Trading card</MenuItem>
+              <MenuItem value="Utility">Utility</MenuItem>
             </Select>
           </FormControl>
         </div>
@@ -74,14 +80,14 @@ const Tempcelebs=({ addCeleb })=>{
 }
 
 const mapStateToProps = (state) => ({
-
+  token: state.auth.jwt_token
 });
 
 const mapDispatchToProps = {
     addCeleb
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Tempcelebs);
+export default connect(mapStateToProps, mapDispatchToProps)(Addceleb);
 
 
     

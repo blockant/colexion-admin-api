@@ -1,107 +1,180 @@
 import React, {useEffect, useState} from 'react'
 import { Button, FormControl, InputLabel, Select, TextField, MenuItem } from '@mui/material'
-import Paperbase from '../components/Landing/Paperbase'
-import PersonAddIcon from '@mui/icons-material/PersonAdd';
-import SearchIcon from '@mui/icons-material/Search';
 import { connect, useSelector } from "react-redux";
 import styles from "./Allcelebs.module.css";
+import Paperbase from '../components/Landing/Paperbase';
 import axios from "axios";
 import StickyHeadTable from '../components/MUI/StickyHeadTable';
 import {getAllCelebs} from '../actions/celebs'
-const  Allcelebs =({getAllCelebs, celebs_list})=> {
+import auth from '../reducers/auth';
+import {Link} from 'react-router-dom'
+import {deleteCeleb} from '../actions/celebs'
+import {updateCeleb} from "../actions/celebs"
+import { makeStyles } from '@material-ui/core/styles';
+import { 
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    Paper,
+    Avatar,
+    Grid,
+    Typography,
+    TablePagination,
+    TableFooter
+ } from '@material-ui/core';
+
+ const useStyles = makeStyles((theme) => ({
+  table: {
+    minWidth: 900,
+    minHeight: 600
+  },
+  tableContainer: {
+      borderRadius: 15,
+      margin: '10px 10px',
+      maxWidth: 1450
+  },
+  tableHeaderCell: {
+      fontWeight: 'bold',
+      backgroundColor: theme.palette.primary.dark,
+      color: theme.palette.getContrastText(theme.palette.primary.dark)
+  },
+  avatar: {
+      backgroundColor: theme.palette.primary.light,
+      color: theme.palette.getContrastText(theme.palette.primary.light)
+  },
+  name: {
+      fontWeight: 'bold',
+      color: theme.palette.secondary.dark
+  },
+  status: {
+      fontWeight: 'bold',
+      fontSize: '0.75rem',
+      color: 'white',
+      backgroundColor: 'grey',
+      borderRadius: 8,
+      padding: '3px 10px',
+      display: 'inline-block'
+  }
+}));
+
+const  Allcelebs =({token, getAllCelebs, deleteCeleb, updateCeleb})=> {
   
 const [celebList, setCelebList] = useState([]);
-const [selectedCeleb, setSelectedCeleb] = useState("");
-const [email, setEmail] = useState("");
-const [password, setPassword] = useState("");
-const [repeatPassword, setRepeatPassword] = useState("");
+const classes = useStyles();
+const [page, setPage] = React.useState(0);
+const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
-const selectCelebrity = (e) => {
-  setSelectedCeleb(e.target.value);
-}
+const handleChangePage = (event, newPage) => {
+  setPage(newPage);
+};
+
+const handleChangeRowsPerPage = (event) => {
+  setRowsPerPage(+event.target.value);
+  setPage(0);
+};
+const deleteceleb = async (id)=>{
+  try {
+      console.log(id);
+  const response = await deleteCeleb(token, id);
+      console.log(response);
+      const newp =celebList.filter(celeb => id!==celeb._id);
+      setCelebList(newp);
+  } catch (err) {
+      console.log(err);
+  }
+};
+
+const updateceleb = async (id)=>{
+  try {
+      console.log(id);
+  const response = await updateCeleb(token, id);
+      console.log(response);
+     
+      // setCelebList(newp);
+  } catch (err) {
+      console.log(err);
+  }
+};
+
 useEffect(() => {
     async function fetchUsers() {
-        const res = await getAllCelebs();
+        console.log(token);
+        const res = await getAllCelebs(token);
         console.log(res);
         setCelebList(res);
     }
     fetchUsers()
 }, [getAllCelebs])
-const addCelebHandler=async(e)=>{
-  e.preventDefault();
-  console.log(selectedCeleb, email, password, repeatPassword);
-  const body = JSON.stringify({ name: selectedCeleb, email, password });
-  const config = {
-    headers: {
-        "Content-Type": "application/json"
-    },
-};
- if(password===repeatPassword)
- {
-  const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/v1/auth/signup`,body, config);
-  console.log(res);
- }
- else
- { 
-   console.log("Passwords don't match");
- }
 
-}
   return (
-    <Paperbase >
-        <div className={styles.container}>
-          <div className={styles.header}>
-            <h1>Celebrities</h1>
-            <div className={styles.add_btn}>
-              <SearchIcon sx={{ color: 'action.active', mr: 1, my: 0.5 }} className={styles.search_icon} />
-              <TextField id="input-with-sx" sx={{mr:5}}label="Search..." variant="standard" />
-              <Button variant="contained" startIcon={<PersonAddIcon />} className={styles.btn_icon}>Add celebrity</Button>
-            </div>
-          </div>
-          <div className={styles.info}>
-              <div className={styles.dropdown}>
-              <FormControl fullWidth variant="standard">
-                  <InputLabel variant="standard" htmlFor="uncontrolled-native">
-                      Select Celebrity
-                  </InputLabel>
-                  <Select
-                  // defaultValue={1}
-                    onChange={selectCelebrity}
-                  >
-                    {
-                      celebList.map((celeb, idx) => 
-                        <MenuItem value={celeb.name} key={idx}> {celeb.name}-{celeb.category},{celeb.tier} </MenuItem> 
-                      )
-                    }
-                      {/* <MenuItem value={1}>Adam Zampa-Sports,Tier-2</MenuItem>
-                      <MenuItem value={2}>Amitesh Kumar-Photography,Tier-1</MenuItem>
-                      <MenuItem value={3}>Arpit Kumar-Photography,Tier-1</MenuItem> */}
-                      </Select>
-                      </FormControl>
-              </div>
-              <div className={styles.namePass}>
-              <TextField id="name-input" label="Name" variant="standard" style={{width:"40%"}} value={selectedCeleb}/>
-              <TextField id="email-input" label="Email" variant="standard" style={{width:"40%"}} value={email} onChange={(e) => setEmail(e.target.value)} />
-              </div>
-              <div className={styles.emailPass}>
-              <TextField id="password-input" label="Password" variant="standard" style={{width:"40%"}} value={password} onChange={(e) => setPassword(e.target.value)} />
-              <TextField id="reenter-password-input" label="Confirm Password" variant="standard" style={{width:"40%"}} value={repeatPassword} onChange={(e) => setRepeatPassword(e.target.value)} error={password!==repeatPassword} helperText={password!==repeatPassword ? "Passwords don't match" : ""} />
-              </div>
-              <div className={styles.btn}>
-                <Button variant="contained" onClick={addCelebHandler}>Add Celebrity</Button>
-              </div>
-          </div>
-      </div>
-    </Paperbase>
+    <Paperbase>
+    <TableContainer component={Paper} className={classes.tableContainer}>
+    <Table className={classes.table} aria-label="simple table">
+      <TableHead>
+        <TableRow>
+          <TableCell className={classes.tableHeaderCell}>Name</TableCell>
+          <TableCell className={classes.tableHeaderCell}>Tier</TableCell>
+          <TableCell className={classes.tableHeaderCell}>Category</TableCell>
+          <TableCell className={classes.tableHeaderCell}>Delete</TableCell>
+          <TableCell className={classes.tableHeaderCell}>Update</TableCell>
+        </TableRow>
+      </TableHead>
+      <TableBody>
+        {celebList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((celeb) => (
+          <TableRow key={celeb._id}>
+            <TableCell>
+                <Grid container>
+                    <Grid item lg={2}>
+                        <Avatar alt={celeb.name} src='.' className={classes.avatar}/>
+                    </Grid>
+                    <Grid item lg={10}>
+                        <Typography className={classes.name}>{celeb['name']}</Typography>
+            
+                    </Grid>
+                </Grid>
+              </TableCell>
+            <TableCell>
+                <Typography color="primary" variant="subtitle2">{celeb['tier']}</Typography>
+                {/* <Typography color="textSecondary" variant="body2">{row.company}</Typography> */}
+              </TableCell>
+            <TableCell>{celeb['category']}</TableCell>
+              <TableCell>
+              <Button color="primary" onClick={()=>deleteceleb(celeb._id)}variant="contained">Delete</Button>
+              </TableCell>
+              <TableCell>
+            <Link to={`/update/${celeb._id}`}><Button color="primary" variant="contained">Update</Button></Link>
+              </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+      <TableFooter>
+      <TablePagination
+          rowsPerPageOptions={[5, 10, 15]}
+          component="div"
+          count={celebList.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onChangePage={handleChangePage}
+          onChangeRowsPerPage={handleChangeRowsPerPage}
+      />
+      </TableFooter>
+    </Table>
+  </TableContainer>
+  </Paperbase>
   )
 }
 
 const mapStateToProps = (state) => ({
-
+  token: state.auth.jwt_token
 });
 
 const mapDispatchToProps = {
-    getAllCelebs
+    getAllCelebs,
+    deleteCeleb,
+    updateCeleb
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Allcelebs);

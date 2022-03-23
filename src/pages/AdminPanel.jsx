@@ -219,7 +219,7 @@ const AdminPanel = ({ uploadNft, updateNFTData }) => {
 
 
 const mapStateToProps = (state) => ({
-
+    token: state.auth.jwt_token
 });
 
 const mapDispatchToProps = {

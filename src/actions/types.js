@@ -7,3 +7,11 @@ export const ERROR = "ERROR"
 
 export const ADD_CELEB= "ADD_CELEB"
 export const ALL_CELEBS = "ALL_CELEBS"
+
+export const USER_LOADED = "USER_LOADED";
+export const AUTH_ERROR = "AUTH_ERROR";
+export const LOGIN_SUCCESS = "LOGIN_SUCCESS";
+export const LOGOUT = "LOGOUT";
+
+export const DELETE_CELEB ="DELETE_CELEB";
+export const UPDATE_CELEB ="UPDATE_CELEB";

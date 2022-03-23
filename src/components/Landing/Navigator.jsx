@@ -23,10 +23,6 @@ const categories = [
     id: "User",
     icon: <PeopleIcon />,
     children: [
-      {
-        id: "All Celebrities",
-        href:"/tempceleb"
-      },
       { id: "All User",
         href:"/users"
       },
@@ -41,6 +37,24 @@ const categories = [
       { id: "Mint NFT", href:"/nft/create" },
       { id: "NFT Sold" },
       { id: "Payments" },
+    ],
+  },
+  {
+    id: "Celebrity",
+    icon: <PeopleIcon/>,
+    children: [
+      {
+        id: "All Celebrities",
+        href:"/allceleb"
+      },
+      {
+        id: "Add Celebrity",
+        href:"/addceleb"
+      },
+      {
+        id: "Register to Platform",
+        href:"/registerceleb"
+      },
     ],
   },
 ];
