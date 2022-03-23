@@ -6,6 +6,8 @@ import PropTypes from 'prop-types'
 import { uploadNft } from "../actions/nft";
 import styles from "./AdminPanel.module.css";
 import axios from "axios";
+import Web3 from "web3";
+import abi from"../ERC721.json";
 
 const AdminPanel = ({token,uploadNft }) => {
 
@@ -61,11 +63,65 @@ const AdminPanel = ({token,uploadNft }) => {
         const res = await uploadNft(token,enteredName, enteredBio, nftData)
         contentHash=res.data.nft.content_hash;
         setFileURL("https://gateway.pinata.cloud/ipfs/"+contentHash);
-        console.log(contentHash);
-        console.log(fileURL);
+        //console.log(contentHash);
+        //console.log(fileURL);
         setSuccess(!success);
     };
-    console.log(fileURL);
+    //console.log(fileURL);
+
+    const mintNFT = async (event) => {
+        try{
+            if (window.ethereum) {
+                window.web3 = new Web3(window.ethereum);
+                await window.ethereum.enable();
+            }
+            if (window.web3) {
+                window.web3 = new Web3(window.web3.currentProvider);
+            } else {
+                return window.alert("Please install MetaMask!");
+            }
+            //setWeb3(window.web3)
+            const web3 = window.web3;
+
+            //deployed contract address :: 0x2496480d827E12aCAc35aA21a6Ec5b3D02e6816E
+            const contract_address = "0x2496480d827E12aCAc35aA21a6Ec5b3D02e6816E";
+            //current wallet address
+            const accounts = await web3.eth.getAccounts();
+            //default account who will be taking actions
+            web3.eth.defaultAccount = accounts[0];
+            console.log("Default Acoount : "+ accounts[0]);
+            
+            //address (to) for which NFT will be minted
+            // const to_address = enteredAddress;
+            console.log(enteredAddress);
+            // console.log("Address where NFT is minted to: "+to_address);
+
+            //creating instance of smart contract
+            const med = new web3.eth.Contract(abi,contract_address, {
+                //string:: gas price in wei to use for transactions.
+                //gasPrice: '100000000000',
+                //number:: maximum gas provided for a transaction(gas limit).
+                //gas: 500000
+            });
+            console.log("hi!!!!");
+
+            //two parameters :: inputAddress && IPFSURL(fileURL)
+            console.log("URL: "+fileURL);
+            const receipt = await med.methods.mintByOwner(accounts[0],fileURL).
+	        send({from:web3.eth.defaultAccount},function(error,transactionHash){
+		    console.log("hello!!!");
+            if(!error){
+			    console.log("Transaction Hash of Minting: "+transactionHash);
+		    } else {
+		        console.log(error);
+		    }
+            });
+            console.log("Receipt from the event: "+receipt.events);
+
+            } catch (error) {
+                console.log("caught", error);
+            }
+    };
 
     // useEffect(async () => {
     //     await loadUser(jwt_token)
@@ -153,8 +209,8 @@ const AdminPanel = ({token,uploadNft }) => {
         <div className={styles.right}>
                 <TextField id="Address" label="Address" variant="outlined" style={{width:"69%", margin:"0 auto"}} onChange={addressChangeHandler}/>
                 <div>
-                    <Button className={styles.btn} variant="contained">Mint ERC721</Button>
-                    <Button className={styles.btn-2} variant="contained">Mint ERC1155</Button>
+                    <Button className={styles.btn} onClick={mintNFT}variant="contained">Mint ERC721</Button>
+                    <Button className={styles.btn-2} onClick={mintNFT}variant="contained">Mint ERC1155</Button>
                 </div>
         </div>
         </main>
