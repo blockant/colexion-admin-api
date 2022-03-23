@@ -1,5 +1,5 @@
 import axios from "axios";
-import { NFT_UPLOAD, ERROR } from "./types";
+import { NFT_UPLOAD, ERROR, NO_ACTION } from "./types";
 
 // Post NFTs
 export const uploadNft = (name, bio, nftData) => async (dispatch) => {
@@ -33,3 +33,22 @@ export const uploadNft = (name, bio, nftData) => async (dispatch) => {
         })
     }
 };
+
+export const updateNFTData=(contentHash, tokenid, enteredAddress)=>async(dispatch)=>{
+    try{
+        const payload = {
+            content_hash:contentHash,
+            tokenid:tokenid,
+            owner_address:enteredAddress
+        }
+        await axios.put(`${process.env.REACT_APP_API_URL}/api/v1/nft`,payload)
+        dispatch({
+            type: NO_ACTION,
+        })
+    }catch(err){
+        console.log(err)
+        dispatch({
+            type: NO_ACTION,
+        })
+    }
+}

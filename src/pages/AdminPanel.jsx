@@ -3,13 +3,13 @@ import { Link, useParams, Navigate } from 'react-router-dom';
 import { connect, useSelector } from "react-redux";
 import {FormControl, InputLabel, TextField, Button,TextareaAutosize} from "@mui/material";
 import PropTypes from 'prop-types'
-import { uploadNft } from "../actions/nft";
+import { uploadNft, updateNFTData } from "../actions/nft";
 import styles from "./AdminPanel.module.css";
 import axios from "axios";
 import Web3 from "web3";
 import abi from"../ERC721.json";
 
-const AdminPanel = ({ uploadNft }) => {
+const AdminPanel = ({ uploadNft, updateNFTData }) => {
 
     const [success, setSuccess] = useState(false);
     const [enteredName, setEnteredName] = useState('');
@@ -23,14 +23,6 @@ const AdminPanel = ({ uploadNft }) => {
     const [tokenid,setTokenid]=useState('')
     //variable to store TokenID
     
-    const payload = 
-    {
-        content_hash:contentHash,
-        tokenid:tokenid,
-        owner_address:enteredAddress
-    }
-    const res = axios.put(`${process.env.REACT_APP_API_URL}/api/v1/nft`,payload).then(res => console.log(res))
-    console.log(res);
     const nameChangeHandler = (event) => {
         setEnteredName(event.target.value)
     }
@@ -80,55 +72,51 @@ const AdminPanel = ({ uploadNft }) => {
         //console.log(fileURL);
         
     };
-    console.log(contentHash);
+    // console.log(contentHash);
 
     const mintNFT = async (event) => {
         try{
-            if (window.ethereum) {
-                window.web3 = new Web3(window.ethereum);
-                await window.ethereum.enable();
-            }
-            if (window.web3) {
-                window.web3 = new Web3(window.web3.currentProvider);
-            } else {
-                return window.alert("Please install MetaMask!");
-            }
-            //setWeb3(window.web3)
-            const web3 = window.web3;
+                if (window.ethereum) {
+                    window.web3 = new Web3(window.ethereum);
+                    await window.ethereum.enable();
+                }
+                if (window.web3) {
+                    window.web3 = new Web3(window.web3.currentProvider);
+                } else {
+                    return window.alert("Please install MetaMask!");
+                }
+                //setWeb3(window.web3)
+                const web3 = window.web3;
 
-            //deployed contract address :: 0x2496480d827E12aCAc35aA21a6Ec5b3D02e6816E
-            const contract_address = "0x2250F5Fd2Ef97A9872423142b31C327d60CDcef6";
-            //current wallet address
-            const accounts = await web3.eth.getAccounts();
-            //default account who will be taking actions
-            web3.eth.defaultAccount = accounts[0];
-            console.log("Default Acoount : "+ accounts[0]);
-            
-            //entered address from UI :: (to_account) for which NFT will be minted
-            console.log(enteredAddress);
+                //deployed contract address :: 0x2496480d827E12aCAc35aA21a6Ec5b3D02e6816E
+                const contract_address = "0x2250F5Fd2Ef97A9872423142b31C327d60CDcef6";
+                //current wallet address
+                const accounts = await web3.eth.getAccounts();
+                //default account who will be taking actions
+                web3.eth.defaultAccount = accounts[0];
+                console.log("Default Acoount : "+ accounts[0]);
+                
+                //entered address from UI :: (to_account) for which NFT will be minted
+                console.log(enteredAddress);
 
-            //creating instance of smart contract
-            const med = new web3.eth.Contract(abi,contract_address, {});
+                //creating instance of smart contract
+                const med = new web3.eth.Contract(abi,contract_address, {});
 
-            //IPFS file URL
-            console.log("URL: "+fileURL);
-            //minting NFT here two parameters :: enteredAddress && IPFSURL(fileURL)
-            const receipt = await med.methods.mintByOwner(enteredAddress,"fileURL").
-	        send({from:web3.eth.defaultAccount},function(error,transactionHash){
-		    
-            if(!error){
-			    console.log("Transaction Hash of Minting: "+transactionHash);
-		    } else {
-		        console.log(error);
-		    }
-            });
-            //printing the log of transaction
-            console.log("Receipt from the event: ", receipt);
-            //TokenID;
-            //console.log("TokenID ", receipt.events.Transfer.returnValues['2']);
-            const TOKENID = receipt.events.Transfer.returnValues['2'];
-            setTokenid(TOKENID);
-            console.log("Token ID: ", TOKENID);
+                //IPFS file URL
+                console.log("URL: "+fileURL);
+                //minting NFT here two parameters :: enteredAddress && IPFSURL(fileURL)
+                const response = await med.methods.mintByOwner(enteredAddress,"fileURL").send({from:web3.eth.defaultAccount})
+                console.log(response)
+                if(response?.status){
+                    const receipt=response.data
+                    console.log('Receipt', receipt)
+                    // console.log("Transaction Hash of Minting: "+transactionHash);
+                    // printing the log of transaction
+                    console.log("Receipt from the event: ", receipt);
+                    const TOKENID = receipt.events.Transfer.returnValues['2'];
+                    await updateNFTData(contentHash, TOKENID, enteredAddress)
+                    // console.log("Token ID: ", TOKENID);
+                }
             } catch (error) {
                 console.log("caught", error);
             }
@@ -220,8 +208,8 @@ const AdminPanel = ({ uploadNft }) => {
         <div className={styles.right}>
                 <TextField id="Address" label="Address" variant="outlined" style={{width:"69%", margin:"0 auto"}} onChange={addressChangeHandler}/>
                 <div>
-                    <Button className={styles.btn} onClick={mintNFT}variant="contained">Mint ERC721</Button>
-                    <Button className={styles.btn-2} onClick={mintNFT}variant="contained">Mint ERC1155</Button>
+                    <Button  onClick={mintNFT}variant="contained">Mint ERC721</Button>
+                    <Button  onClick={mintNFT}variant="contained">Mint ERC1155</Button>
                 </div>
         </div>
         </main>
@@ -235,7 +223,8 @@ const mapStateToProps = (state) => ({
 });
 
 const mapDispatchToProps = {
-    uploadNft
+    uploadNft,
+    updateNFTData
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(AdminPanel);
