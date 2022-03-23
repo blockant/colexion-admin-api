@@ -9,7 +9,7 @@ import axios from "axios";
 import Web3 from "web3";
 import abi from"../ERC721.json";
 
-const AdminPanel = ({ uploadNft, updateNFTData }) => {
+const AdminPanel = ({ uploadNft, updateNFTData, jwt_token }) => {
 
     const [success, setSuccess] = useState(false);
     const [enteredName, setEnteredName] = useState('');
@@ -59,20 +59,19 @@ const AdminPanel = ({ uploadNft, updateNFTData }) => {
             clearTimeout(identifier)
         }
     }, [enteredName])
-
+    /**
+     * 
+     * @param {Event} e 
+     * This Form Pins Data To IPFS
+     */
     const onFormSubmitHandler = async (e) => {
         e.preventDefault();
         // console.log(enteredName, enteredBio, enteredCeleb, nftData);
-        uploadNft(enteredName, enteredBio, nftData).then(res => {console.log(res); setFileURL("https://gateway.pinata.cloud/ipfs/" + res.data.nft.content_hash);
-        setContenthash(res.data.nft.content_hash);
-        setSuccess(!success);});
-       // const content=res.data.nft.content_hash;
-        //setFileURL("https://gateway.pinata.cloud/ipfs/"+content);
-        //console.log(contentHash);
-        //console.log(fileURL);
-        
+        const response=await uploadNft(jwt_token, enteredName, enteredBio, nftData)
+        setFileURL("https://gateway.pinata.cloud/ipfs/" + response.data.nft.content_hash)
+        setContenthash(response.data.nft.content_hash);
+        setSuccess(!success);
     };
-    // console.log(contentHash);
 
     const mintNFT = async (event) => {
         try{
@@ -89,7 +88,7 @@ const AdminPanel = ({ uploadNft, updateNFTData }) => {
                 const web3 = window.web3;
 
                 //deployed contract address :: 0x2496480d827E12aCAc35aA21a6Ec5b3D02e6816E
-                const contract_address = "0x2250F5Fd2Ef97A9872423142b31C327d60CDcef6";
+                const contract_address = "0x2496480d827E12aCAc35aA21a6Ec5b3D02e6816E";
                 //current wallet address
                 const accounts = await web3.eth.getAccounts();
                 //default account who will be taking actions
@@ -108,12 +107,10 @@ const AdminPanel = ({ uploadNft, updateNFTData }) => {
                 const response = await med.methods.mintByOwner(enteredAddress,"fileURL").send({from:web3.eth.defaultAccount})
                 console.log(response)
                 if(response?.status){
-                    const receipt=response.data
-                    console.log('Receipt', receipt)
                     // console.log("Transaction Hash of Minting: "+transactionHash);
                     // printing the log of transaction
-                    console.log("Receipt from the event: ", receipt);
-                    const TOKENID = receipt.events.Transfer.returnValues['2'];
+                    console.log("Response From mintByOwner: ", response);
+                    const TOKENID = response?.events?.Transfer?.returnValues?.['2'];
                     await updateNFTData(contentHash, TOKENID, enteredAddress)
                     // console.log("Token ID: ", TOKENID);
                 }
@@ -194,9 +191,9 @@ const AdminPanel = ({ uploadNft, updateNFTData }) => {
                                         </div>
                                     </div>
                                     {formIsValid ? (<>
-                                        <Button className={styles.bt} onClick={onFormSubmitHandler}  name='submit' variant="contained">Pin to IPFS</Button>
+                                        <Button onClick={onFormSubmitHandler}  name='submit' variant="contained">Pin to IPFS</Button>
                                     </>) : (<>
-                                        <Button className={styles.bt} name='submit' variant="contained" disabled>Pin to IPFS</Button>
+                                        <Button name='submit' variant="contained" disabled>Pin to IPFS</Button>
                                     </>)}
                                 </form>
                             </div>
@@ -219,7 +216,7 @@ const AdminPanel = ({ uploadNft, updateNFTData }) => {
 
 
 const mapStateToProps = (state) => ({
-    token: state.auth.jwt_token
+    jwt_token: state.auth.jwt_token
 });
 
 const mapDispatchToProps = {

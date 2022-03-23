@@ -1,7 +1,7 @@
 import axios from "axios";
 import { NFT_UPLOAD, ERROR, NO_ACTION } from "./types";
 
-// Post NFTs
+//  (PIN TO IPFS)
 export const uploadNft = (token,name, bio, nftData) => async (dispatch) => {
     const body = JSON.stringify({ name, bio });
     console.log(token,name, bio, nftData)
@@ -39,7 +39,7 @@ export const updateNFTData=(contentHash, tokenid, enteredAddress)=>async(dispatc
     try{
         const payload = {
             content_hash:contentHash,
-            tokenid:tokenid,
+            tokenId:tokenid,
             owner_address:enteredAddress
         }
         await axios.put(`${process.env.REACT_APP_API_URL}/api/v1/nft`,payload)
