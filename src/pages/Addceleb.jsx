@@ -71,8 +71,8 @@ const Addceleb=({ token,addCeleb })=>{
                   </Select>
                 </FormControl>
               </div>
-              <div className={styles.btn}>
-                 <Button onClick={submitHandler} variant="contained">Proceed</Button> 
+              <div className={styles.btn_container}>
+                 <Button onClick={submitHandler} className={styles.btn}>Proceed</Button> 
               </div>
             </div>
     </Paperbase>

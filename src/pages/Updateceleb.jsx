@@ -70,8 +70,8 @@ const UpdateCeleb=({ updateCeleb, token })=>{
                   </Select>
                 </FormControl>
               </div>
-              <div className={styles.btn}>
-                 <Button onClick={submitHandler} variant="contained">Update</Button> 
+              <div className={styles.btn_container}>
+                 <Button onClick={submitHandler} className={styles.btn}>Update</Button> 
               </div>
             </div>
     </Paperbase>

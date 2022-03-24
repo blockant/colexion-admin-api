@@ -4,10 +4,11 @@ import Paperbase from '../components/Landing/Paperbase'
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import SearchIcon from '@mui/icons-material/Search';
 import { connect, useSelector } from "react-redux";
-import styles from "./Allcelebs.module.css";
+import styles from "./Register.module.css";
 import axios from "axios";
 import StickyHeadTable from '../components/MUI/StickyHeadTable';
 import {getAllCelebs} from '../actions/celebs'
+//import styles from './Registerceleb.module.css'
 const  Registerceleb =({token,getAllCelebs, celebs_list})=> {
   
 const [celebList, setCelebList] = useState([]);
@@ -58,15 +59,20 @@ const addCelebHandler=async(e)=>{
           <div className={styles.header}>
             <h1>Celebrities</h1>
             <div className={styles.add_btn}>
-              <SearchIcon sx={{ color: 'action.active', mr: 1, my: 0.5 }} className={styles.search_icon} />
-              <TextField id="input-with-sx" sx={{mr:5}}label="Search..." variant="standard" />
+              
+              <div className={styles.search_text}>
+                <TextField id="input-with-sx" sx={{mr:5}}label="Search..." variant="standard"/>
+                <SearchIcon sx={{ color: 'action.active', mr: 1, my: 0.5 }} className={styles.search_icon} />
+              </div> 
+
+              
               <Button variant="contained" startIcon={<PersonAddIcon />} className={styles.btn_icon}>Add celebrity</Button>
             </div>
           </div>
           <div className={styles.info}>
               <div className={styles.dropdown}>
-              <FormControl fullWidth variant="standard">
-                  <InputLabel variant="standard" htmlFor="uncontrolled-native">
+              <FormControl className={styles.form_container}  fullWidth variant="standard">
+                  <InputLabel className={styles.input} variant="standard" htmlFor="uncontrolled-native">
                       Select Celebrity
                   </InputLabel>
                   <Select
@@ -89,8 +95,8 @@ const addCelebHandler=async(e)=>{
               <TextField id="email-input" label="Email" variant="standard" style={{width:"40%"}} value={email} onChange={(e) => setEmail(e.target.value)} />
               </div>
               <div className={styles.emailPass}>
-              <TextField id="password-input" label="Password" variant="standard" style={{width:"40%"}} value={password} onChange={(e) => setPassword(e.target.value)} />
-              <TextField id="reenter-password-input" label="Confirm Password" variant="standard" style={{width:"40%"}} value={repeatPassword} onChange={(e) => setRepeatPassword(e.target.value)} error={password!==repeatPassword} helperText={password!==repeatPassword ? "Passwords don't match" : ""} />
+                <TextField id="password-input" label="Password" variant="standard" style={{width:"40%"}} value={password} onChange={(e) => setPassword(e.target.value)} />
+                <TextField id="reenter-password-input" label="Confirm Password" variant="standard" style={{width:"40%"}} value={repeatPassword} onChange={(e) => setRepeatPassword(e.target.value)} error={password!==repeatPassword} helperText={password!==repeatPassword ? "Passwords don't match" : ""} />
               </div>
               <div className={styles.btn}>
                 <Button variant="contained" onClick={addCelebHandler}>Add Celebrity</Button>
@@ -100,6 +106,7 @@ const addCelebHandler=async(e)=>{
     </Paperbase>
   )
 }
+
 
 const mapStateToProps = (state) => ({
     token: state.auth.jwt_token
