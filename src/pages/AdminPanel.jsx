@@ -140,7 +140,7 @@ const AdminPanel = ({ uploadNft, updateNFTData, jwt_token }) => {
                     // printing the log of transaction
                     console.log("Response From mintByOwner: ", response);
                     const TOKENID = response?.events?.Transfer?.returnValues?.['2'];
-                    await updateNFTData(contentHash, TOKENID, enteredAddress)
+                    await updateNFTData(contentHash, TOKENID, enteredAddress.toLowerCase())
                     setprocessingMintNFT(false)
                     setmintNFTstatus(true)
                     // console.log("Token ID: ", TOKENID);
