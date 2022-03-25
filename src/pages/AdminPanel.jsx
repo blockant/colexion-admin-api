@@ -160,7 +160,7 @@ const AdminPanel = ({ uploadNft, updateNFTData, jwt_token }) => {
         if(copies === "") {
             window.alert("Please enter the number of copies!");
             return;
-        } else if(!Number.isInteger(copies) || copies < 0) {
+        } else if(copies <= 0) {
             window.alert("Number of copies should be a positive integer!");
             return;
         }
@@ -246,7 +246,7 @@ const AdminPanel = ({ uploadNft, updateNFTData, jwt_token }) => {
                         <Typography variant="body2">
                             No. of copies for minting to IRC1155
                         </Typography>
-                        <TextField id="copies" label="No. of copies" variant="outlined" style={{width:"69%", margin:"10px auto"}} onChange={copiesChangeHandler}/>
+                        <TextField id="copies" label="No. of copies" variant="outlined" type="number" style={{width:"69%", margin:"10px auto"}} onChange={copiesChangeHandler}/>
                     </CardContent>
                     <CardActions>
                         {!processingMintNFT? (
