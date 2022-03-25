@@ -8,6 +8,8 @@ import styles from "./AdminPanel.module.css";
 import axios from "axios";
 import Web3 from "web3";
 import abi from"../ERC721.json";
+import Logo from "../logo2.jpg";
+import { style } from '@mui/system';
 
 const AdminPanel = ({token,uploadNft }) => {
 
@@ -17,7 +19,7 @@ const AdminPanel = ({token,uploadNft }) => {
     const [enteredBio, setEnteredBio] = useState('');
     const [enteredAddress,setEnteredAddress] = useState('');
     const [fileURL,setFileURL] = useState('');
-    const [nftImg, setNftImg] = useState(null);
+    const [nftImg, setNftImg] = useState(Logo);
     const [nftData, setNftData] = useState(null);
     let contentHash;
     const nameChangeHandler = (event) => {
@@ -31,11 +33,13 @@ const AdminPanel = ({token,uploadNft }) => {
         reader.onload = () => {
             if (reader.readyState === 2) {
                 setNftImg(reader.result);
+                console.log("Nft image set");
             }
         }
         reader.readAsDataURL(event.target.files[0])
-
+        console.log("Image read");
         setNftData(event.target.files[0])
+        console.log("Image data set");
         // console.log(event.target.files[0])
     }
 
@@ -130,11 +134,13 @@ const AdminPanel = ({token,uploadNft }) => {
     //     // console.log('Inside UseEffect', user)
     // }, [success, jwt_token, loadUser, user.name])
     setTimeout(() => { if (success) { setSuccess(!success) } }, 3000);
-
+    let enterName;
+    const getbox = ()=>{
+        enterName = prompt('Number of copies');
+    }
     return (
         <>
         <main className={styles.main}>
-        <div className={styles.left}>
             {/* <Header /> */}
             <div className="tf-create-item tf-section">
                 <div className="themesflat-container">
@@ -146,16 +152,18 @@ const AdminPanel = ({token,uploadNft }) => {
                     </>) : (<>
                     </>)}
 
-                    <div className="row">
-                        <div className="col-xl-3 col-lg-4 col-md-6 col-12">
+                    <div className={styles.row}>
+                        <div className={styles.form_img}>
                             <div className="sc-card-profile text-center">
-                                <div className="card-media">
-                                    <img id="profileimg" src={nftImg} alt="Axies" />
+                                <div className={styles.card_media} >
+                                    <img className={styles.profileimg}  style={{minHeight: "20rem",minWidth: "26rem"}} src={nftImg} alt="Axies" />
                                 </div>
                                 <div id="upload-profile" className={styles.upload_profile} >
                                     <div>
-                                    <Link to="#" className={styles.btn_upload_nft}>
+                                    <Link to="#" className={styles.btn_upload_nft} style={{color: "white"}}>
+                                    
                                         Upload NFT: 
+                                        
                                     </Link>
                                     </div>
                                     <input id="tf-upload-img" type="file" name="profile"
@@ -165,14 +173,14 @@ const AdminPanel = ({token,uploadNft }) => {
                                 </div>
                             </div>
                         </div>
-                        <div className="col-xl-9 col-lg-8 col-md-12 col-12">
+                        <div className={styles.form_img} style={{marginTop:"20px"}}>
                             <div className="form-upload-profile">
                                 <form method="post" onSubmit={onFormSubmitHandler} autoComplete='off' className="form-profile">
                                     <div className="form-infor-profile">
                                         <div className="info-account">
                                             
                                             <div className={styles.nft}>
-                                                <h2 className="title-create-item">NFT info</h2>
+                                                <h2 className="title-create-item" >NFT info</h2>
                                                 <div className={styles.nftname}>
                                                     <TextField id="Address" label="NFT Name" variant="outlined" onChange={nameChangeHandler} style={{width:"80%", margin:"0 auto"}}/>
                                                 </div>
@@ -188,29 +196,30 @@ const AdminPanel = ({token,uploadNft }) => {
                                                     minRows={6}
                                                     onChange={bioChangeHandler}
                                                     placeholder="Description"
-                                                    style={{ width: "80%" }}
+                                                    style={{ width: "79%",backgroundColor:"#14141f",color:"white"}}
                                                     />
                                                 </div>
+                                                <Button className={styles.bt} name='submit' variant="contained" disabled>Pin to IPFS</Button>
+                                                
                                             </div>
+                                            
                                         </div>
+                                       
                                     </div>
-                                    {formIsValid ? (<>
-                                        <Button className={styles.bt} onClick={onFormSubmitHandler}  name='submit' variant="contained">Pin to IPFS</Button>
-                                    </>) : (<>
-                                        <Button className={styles.bt} name='submit' variant="contained" disabled>Pin to IPFS</Button>
-                                    </>)}
                                 </form>
                             </div>
+                             
                         </div>
+                    
                     </div>
+                    <hr></hr>
                 </div>
             </div>
-        </div>
         <div className={styles.right}>
                 <TextField id="Address" label="Address" variant="outlined" style={{width:"69%", margin:"0 auto"}} onChange={addressChangeHandler}/>
                 <div>
                     <Button className={styles.btn} onClick={mintNFT}variant="contained">Mint ERC721</Button>
-                    <Button className={styles.btn-2} onClick={mintNFT}variant="contained">Mint ERC1155</Button>
+                    <Button className={styles.btn}  onClick={getbox}variant="contained">Mint ERC1155</Button>
                 </div>
         </div>
         </main>

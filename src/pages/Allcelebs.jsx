@@ -84,7 +84,7 @@ const rows = celebList.map(celeb => createData(celeb._id, celeb.name, celeb.tier
   return (
     <Paperbase>
     <TableContainer component={Paper} className={styles.tableContainer}>
-      <Table sx={{ minWidth: 650 }} >
+      <Table className={styles.table} sx={{ minWidth: 650 }} >
         <TableHead>
           <TableRow>
             <TableCell className={styles.tableHeaderCell}>NAME</TableCell>
@@ -93,7 +93,7 @@ const rows = celebList.map(celeb => createData(celeb._id, celeb.name, celeb.tier
             <TableCell className={styles.tableHeaderCell}>ACTION</TableCell>
           </TableRow>
         </TableHead>
-        <TableBody>
+        <TableBody style={{borderTopLeftRadius: "8px !important"}}>
           {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
             <TableRow
               key={row.id}
@@ -112,6 +112,7 @@ const rows = celebList.map(celeb => createData(celeb._id, celeb.name, celeb.tier
       </Table>
     </TableContainer>
     <TablePagination
+          className={styles.pagination}
           rowsPerPageOptions={[5, 10, 25]}
           component="div"
           count={rows.length}

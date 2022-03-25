@@ -36,10 +36,10 @@ const Addceleb=({ token,addCeleb })=>{
     <Paperbase>
       <div className={styles.form}>
         <div className={styles.name}>
-          <TextField id="standard-basic" label="Name" onChange={nameHandler} variant="standard" />
+          <TextField id="standard-basic" label="Name" onChange={nameHandler} variant="outlined" />
         </div>
         <div className={styles.categories}>
-          <FormControl variant="standard">
+          <FormControl variant="outlined">
           <InputLabel id="category">Category</InputLabel>
             <Select
               defaultValue="Sports"
@@ -57,7 +57,7 @@ const Addceleb=({ token,addCeleb })=>{
           </FormControl>
         </div>
         <div className={styles.tier}>
-          <FormControl variant="standard">
+          <FormControl variant="outlined">
             <InputLabel variant="standard" htmlFor="uncontrolled-native">
               Tier
             </InputLabel>

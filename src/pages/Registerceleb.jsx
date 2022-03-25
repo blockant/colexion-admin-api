@@ -61,7 +61,7 @@ const addCelebHandler=async(e)=>{
             <div className={styles.add_btn}>
               
               <div className={styles.search_text}>
-                <TextField id="input-with-sx" sx={{mr:5}}label="Search..." variant="standard"/>
+                <TextField id="input-with-sx" sx={{mr:5}}label="Search..." variant="outlined"/>
                 <SearchIcon sx={{ color: 'action.active', mr: 1, my: 0.5 }} className={styles.search_icon} />
               </div> 
 
@@ -71,7 +71,7 @@ const addCelebHandler=async(e)=>{
           </div>
           <div className={styles.info}>
               <div className={styles.dropdown}>
-              <FormControl className={styles.form_container}  fullWidth variant="standard">
+              <FormControl className={styles.form_container}  fullWidth variant="outlined">
                   <InputLabel className={styles.input} variant="standard" htmlFor="uncontrolled-native">
                       Select Celebrity
                   </InputLabel>
@@ -91,15 +91,15 @@ const addCelebHandler=async(e)=>{
                       </FormControl>
               </div>
               <div className={styles.namePass}>
-              <TextField id="name-input" label="Name" variant="standard" style={{width:"40%"}} value={selectedCeleb}/>
-              <TextField id="email-input" label="Email" variant="standard" style={{width:"40%"}} value={email} onChange={(e) => setEmail(e.target.value)} />
+              <TextField id="name-input" label="Name" variant="outlined" style={{width:"40%"}} value={selectedCeleb}/>
+              <TextField id="email-input" label="Email" variant="outlined" style={{width:"40%"}} value={email} onChange={(e) => setEmail(e.target.value)} />
               </div>
               <div className={styles.emailPass}>
-                <TextField id="password-input" label="Password" variant="standard" style={{width:"40%"}} value={password} onChange={(e) => setPassword(e.target.value)} />
-                <TextField id="reenter-password-input" label="Confirm Password" variant="standard" style={{width:"40%"}} value={repeatPassword} onChange={(e) => setRepeatPassword(e.target.value)} error={password!==repeatPassword} helperText={password!==repeatPassword ? "Passwords don't match" : ""} />
+                <TextField id="password-input" label="Password" variant="outlined" style={{width:"40%"}} value={password} onChange={(e) => setPassword(e.target.value)} />
+                <TextField id="reenter-password-input" label="Confirm Password" variant="outlined" style={{width:"40%"}} value={repeatPassword} onChange={(e) => setRepeatPassword(e.target.value)} error={password!==repeatPassword} helperText={password!==repeatPassword ? "Passwords don't match" : ""} />
               </div>
-              <div className={styles.btn}>
-                <Button variant="contained" onClick={addCelebHandler}>Add Celebrity</Button>
+              <div className={styles.button}>
+                <Button variant="standard" className={styles.btn} onClick={addCelebHandler}>Add Celebrity</Button>
               </div>
           </div>
       </div>

@@ -38,10 +38,10 @@ const UpdateCeleb=({ updateCeleb, token })=>{
     <Paperbase>
       <div className={styles.form}>
         <div className={styles.name}>
-          <TextField id="standard-basic" label="Name" onChange={nameHandler} variant="standard" />
+          <TextField id="standard-basic" label="Name" onChange={nameHandler} variant="outlined" />
         </div>
         <div className={styles.categories}>
-          <FormControl variant="standard">
+          <FormControl variant="outlined">
           <InputLabel id="category">Category</InputLabel>
             <Select
               defaultValue="Sports"
@@ -49,14 +49,17 @@ const UpdateCeleb=({ updateCeleb, token })=>{
               labelId="category"
               id="demo-simple-select-standard"
             >
-              <MenuItem value="Sports">Sports</MenuItem>
+             <MenuItem value="Sports">Sports</MenuItem>
               <MenuItem value="Art">Art</MenuItem>
-              <MenuItem value="Photography">Photography</MenuItem>
+              <MenuItem value="Music">Music</MenuItem>
+              <MenuItem value="Domain Names">Domain Names</MenuItem>
+              <MenuItem value="Trading Cards">Trading card</MenuItem>
+              <MenuItem value="Utility">Utility</MenuItem>
             </Select>
           </FormControl>
         </div>
         <div className={styles.tier}>
-          <FormControl variant="standard">
+          <FormControl variant="outlined">
             <InputLabel variant="standard" htmlFor="uncontrolled-native">
               Tier
             </InputLabel>

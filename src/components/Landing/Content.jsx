@@ -27,7 +27,7 @@ function Content({ isMetaMaskConnected, metaMaskAddress, table }) {
           </Typography>
         </Paper>
       </Grid>
-      <Grid item xs={12}>
+      <Grid item xs={12} style={{ maxHeight: 0}}>
         <Paper sx={{ margin: "auto" }}>
           <Typography
             sx={{ my: 5, mx: 2 }}
