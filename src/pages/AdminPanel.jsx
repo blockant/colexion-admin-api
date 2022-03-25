@@ -22,6 +22,7 @@ const AdminPanel = ({ uploadNft, updateNFTData, jwt_token }) => {
     const [enteredName, setEnteredName] = useState('');
     const [enteredCeleb, setEnteredCeleb] = useState("Random");
     const [enteredBio, setEnteredBio] = useState('');
+    const [copies, setCopies] = useState('');
     const [enteredAddress,setEnteredAddress] = useState('');
     const [fileURL,setFileURL] = useState('');
     const [nftImg, setNftImg] = useState(null);
@@ -64,6 +65,9 @@ const AdminPanel = ({ uploadNft, updateNFTData, jwt_token }) => {
 
     const addressChangeHandler = (e) =>{
         setEnteredAddress(e.target.value);
+    }
+    const copiesChangeHandler = (e) => {
+        setCopies(e.target.value);
     }
 
     const [formIsValid, setFormValid] = useState(false)
@@ -152,10 +156,67 @@ const AdminPanel = ({ uploadNft, updateNFTData, jwt_token }) => {
                 setprocessingMintNFT(false)
             }
     };
+    const mintNFT1155 = async (event) => {
+        if(copies === "") {
+            window.alert("Please enter the number of copies!");
+            return;
+        } else if(!Number.isInteger(copies) || copies < 0) {
+            window.alert("Number of copies should be a positive integer!");
+            return;
+        }
+        try{
+                setprocessingMintNFT(true)
+                if (window.ethereum) {
+                    window.web3 = new Web3(window.ethereum);
+                    await window.ethereum.enable();
+                }
+                if (window.web3) {
+                    window.web3 = new Web3(window.web3.currentProvider);
+                } else {
+                    return window.alert("Please install MetaMask!");
+                }
+                //setWeb3(window.web3)
+                const web3 = window.web3;
+
+                //deployed contract address :: 0x2496480d827E12aCAc35aA21a6Ec5b3D02e6816E
+                const contract_address = "0x2496480d827E12aCAc35aA21a6Ec5b3D02e6816E";
+                //current wallet address
+                const accounts = await web3.eth.getAccounts();
+                //default account who will be taking actions
+                web3.eth.defaultAccount = accounts[0];
+                console.log("Default Acoount : "+ accounts[0]);
+                
+                //entered address from UI :: (to_account) for which NFT will be minted
+                console.log(enteredAddress);
+
+                //creating instance of smart contract
+                const med = new web3.eth.Contract(abi,contract_address, {});
+
+                //IPFS file URL
+                console.log("URL: "+fileURL);
+                //minting NFT here two parameters :: enteredAddress && IPFSURL(fileURL)
+                const response = await med.methods.mintByOwner(enteredAddress,"fileURL").send({from:web3.eth.defaultAccount})
+                console.log(response)
+                if(response?.status){
+                    // console.log("Transaction Hash of Minting: "+transactionHash);
+                    // printing the log of transaction
+                    console.log("Response From mintByOwner: ", response);
+                    const TOKENID = response?.events?.Transfer?.returnValues?.['2'];
+                    await updateNFTData(contentHash, TOKENID, enteredAddress.toLowerCase())
+                    setprocessingMintNFT(false)
+                    setmintNFTstatus(true)
+                    // console.log("Token ID: ", TOKENID);
+                }
+            } catch (error) {
+                console.log("caught", error);
+                setprocessingMintNFT(false)
+            }
+    };
     setTimeout(() => { if (success) { setSuccess(!success) } }, 3000);
     //TODO: Add paperbase
     return (
         <>
+        <Paperbase>
          {/* <BasicModal openStatus={openModalStatus} onClick={handleOpenModalStatus} messageComponent={<Alert severity="success">NFT Minted Success!</Alert>}></BasicModal> */}
             {mintNFTstatus ? (
                 <>
@@ -167,27 +228,31 @@ const AdminPanel = ({ uploadNft, updateNFTData, jwt_token }) => {
             <main className={styles.main}>
                 {ipfsProcessedStatus?(
                 <>
-                    <Card sx={{ maxWidth: 345 }}>
+                    <Card sx={{ maxWidth: 345 }} style={{backgroundColor:"#14141f", color:"white", border:"1px solid white"}}>
                     <CardMedia
                         component="img"
                         alt="Uploaded IPFS Image"
                         height="140"
                         image={ipfsImageCloudUrl}
                     />
-                    <CardContent>
+                    <CardContent style={{ color:"white"}}>
                         <Typography gutterBottom variant="h5" component="div">
                         Mint the Uploaded NFT
                         </Typography>
-                        <Typography variant="body2" color="text.secondary">
+                        <Typography variant="body2">
                             Pinned To IPFS Success, with content Hash {contentHash}
                         </Typography>
-                        <TextField id="Address" label="Address" variant="outlined" style={{width:"69%", margin:"0 auto"}} onChange={addressChangeHandler}/>
+                        <TextField id="Address" label="Address" variant="outlined" style={{width:"69%", margin:"10px auto"}} onChange={addressChangeHandler}/>
+                        <Typography variant="body2">
+                            No. of copies for minting to IRC1155
+                        </Typography>
+                        <TextField id="copies" label="No. of copies" variant="outlined" style={{width:"69%", margin:"10px auto"}} onChange={copiesChangeHandler}/>
                     </CardContent>
                     <CardActions>
                         {!processingMintNFT? (
                         <>
-                            <Button  onClick={mintNFT} size="small">Mint ERC721</Button>
-                            <Button  onClick={mintNFT} size="small">Mint ERC1155</Button>
+                            <Button  onClick={mintNFT} size="small" className={styles.bt}>Mint ERC721</Button>
+                            <Button  onClick={mintNFT1155} size="small" className={styles.bt}>Mint ERC1155</Button>
                         </>): (<><CircularProgress /> Minting The NFT.....</>)}
                             
                     </CardActions>
@@ -220,10 +285,8 @@ const AdminPanel = ({ uploadNft, updateNFTData, jwt_token }) => {
                                                 <img id="profileimg" src={nftImg} alt="Axies" />
                                             </div> */}
                                             <div id="upload-profile" className={styles.upload_profile} >
-                                                <div>
-                                                <Link to="#" className={styles.btn_upload_nft}>
+                                                <div style={{color:"white"}}>
                                                     Upload NFT: 
-                                                </Link>
                                                 </div>
                                                 <input id="tf-upload-img" type="file" name="profile"
                                                     accept='image/*'
@@ -238,7 +301,7 @@ const AdminPanel = ({ uploadNft, updateNFTData, jwt_token }) => {
                                         <div className="form-upload-profile">
                                             <form method="post" onSubmit={onFormSubmitHandler} autoComplete='off' className="form-profile">
                                                 <div className="form-infor-profile">
-                                                    <div className="info-account">
+                                                    <div className="info-account" >
                                                         
                                                         <div className={styles.nft}>
                                                             <h2 className="title-create-item">NFT info</h2>
@@ -256,8 +319,9 @@ const AdminPanel = ({ uploadNft, updateNFTData, jwt_token }) => {
                                                                     labelId="demo-simple-select-label"
                                                                     id="demo-simple-select"
                                                                     value={category}
-                                                                    label="Age"
+                                                                    label="Category"
                                                                     onChange={handleChangeCategory}
+                                                                    style={{width:"56%"}}
                                                                 >
                                                                     <MenuItem value={"Celebrities"}>Celebrities</MenuItem>
                                                                     <MenuItem value={"Sports"}>Sports</MenuItem>
@@ -270,14 +334,14 @@ const AdminPanel = ({ uploadNft, updateNFTData, jwt_token }) => {
                                                                 minRows={6}
                                                                 onChange={bioChangeHandler}
                                                                 placeholder="Description"
-                                                                style={{ width: "80%" }}
+                                                                style={{ width: "80%", backgroundColor:"#14141f",color:"white" }}
                                                                 />
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
                                                 {formIsValid ? (<>
-                                                    {processingIPFSupload ? (<><CircularProgress /> Pinning Data To IPFS Hold on.....</>): (<><Button onClick={onFormSubmitHandler}  name='submit' variant="contained">Pin to IPFS</Button></>)}
+                                                    {processingIPFSupload ? (<><CircularProgress  /> <span className={styles.msg}>Pinning Data To IPFS Hold on.....</span></>): (<><div className={styles.btnContainer}><Button onClick={onFormSubmitHandler}  name='submit' className={styles.bt}>Pin to IPFS</Button></div></>)}
                                                 </>) : (<><Button name='submit' variant="contained" disabled>Pin to IPFS</Button></>)}
                                             </form>
                                         </div>
@@ -290,6 +354,7 @@ const AdminPanel = ({ uploadNft, updateNFTData, jwt_token }) => {
                     </div>
                 </>)}
             </main>
+            </Paperbase>
         </>
     );
 }

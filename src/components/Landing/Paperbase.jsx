@@ -180,7 +180,7 @@ export default function Paperbase(props) {
             <Content table={props.table}/>
           </Box>
             {props.children}
-          <Box component="footer" sx={{ p: 2, bgcolor: '#14141f' }}>
+          <Box component="footer" sx={{ p: 2, bgcolor: '#14141f' }} style={{color:"white"}}>
             <Copyright />
           </Box>
         </Box>

@@ -1,7 +1,10 @@
 .main {
+    display:flex;
+    align-items: center;
+    justify-content: center;
     background-color:#14141f;
-    width: 100vw;
-    min-height: 100vh;
+    /* width: 100vw; */
+    /* min-height: 100vh; */
 }
 
 .form_img{
@@ -56,16 +59,17 @@
 }
 .nft{
     border: 1px solid white !important;
-    height:460px;
-    width:460px;
+    min-height:460px;
+    min-width:460px;
     border-radius:50px;
     text-align: center;
     display: flex;
-    color: white;
+    color: white!important;
     align-items: center;
     justify-content: flex-start;
     flex-direction: column;
     padding-top:50px;
+    margin-top: 15px;
 }
 
 .card_media{
@@ -80,17 +84,23 @@
     margin:10px 0;
     width:70%;
 }
-
+/* .description {
+    background-color:#14141f;
+    color:white;
+} */
+.btnContainer {
+    display:flex;
+    justify-content:center;
+}
 .bt{
     margin-top:20px !important;
-        
-        padding: 1.5px 2px !important;
-        width: 200px;
-        height: 50px;
-        border-radius: 150px !important;
-        background-image: linear-gradient(black, black), linear-gradient(to right, #f301af, #4844fd) !important;
-        background-clip: content-box, border-box;
-        color: white!important;
+    padding: 1.5px 2px !important;
+    width: 200px;
+    height: 50px;
+    border-radius: 150px !important;
+    background-image: linear-gradient(black, black), linear-gradient(to right, #f301af, #4844fd) !important;
+    background-clip: content-box, border-box;
+    color: white!important;
 }
 .btn_upload_nft {
     text-decoration: none;
@@ -106,7 +116,6 @@
     width:300px;
     height:300px;
 }
-
-.line{
-   
+.msg {
+    color: white;
 }
