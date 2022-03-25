@@ -52,11 +52,13 @@ const AdminPanel = ({ uploadNft, updateNFTData, jwt_token }) => {
         reader.onload = () => {
             if (reader.readyState === 2) {
                 setNftImg(reader.result);
+                console.log("Nft image set");
             }
         }
         reader.readAsDataURL(event.target.files[0])
-
+        console.log("Image read");
         setNftData(event.target.files[0])
+        console.log("Image data set");
         // console.log(event.target.files[0])
     }
 
@@ -228,7 +230,9 @@ const AdminPanel = ({ uploadNft, updateNFTData, jwt_token }) => {
                                                     onChange={nftChangeHandler}
                                                 />
                                             </div>
+                                            
                                         </div>
+                                       
                                     </div>
                                     <div className="col-xl-9 col-lg-8 col-md-12 col-12">
                                         <div className="form-upload-profile">
@@ -280,7 +284,9 @@ const AdminPanel = ({ uploadNft, updateNFTData, jwt_token }) => {
                                     </div>
                                 </div>
                             </div>
+                             
                         </div>
+                    
                     </div>
                 </>)}
             </main>
