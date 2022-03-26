@@ -119,3 +119,15 @@
 .msg {
     color: white;
 }
+
+label, input, svg {
+    color: #f2f2f2 !important;
+}
+
+fieldset {
+    border-color: #393d3f !important;
+}
+
+div[aria-haspopup='listbox'] {
+    color: #f2f2f2 !important;
+}

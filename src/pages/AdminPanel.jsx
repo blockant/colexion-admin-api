@@ -35,6 +35,7 @@ const AdminPanel = ({ uploadNft, updateNFTData, jwt_token }) => {
     const [mintNFTstatus, setmintNFTstatus]=useState(false)
     const [category, setCategory]=useState('')
     const [openModalStatus, setOpenModalStatus]=useState(false)
+    const [mintType, setMintType] = useState('');
     //variable to store TokenID
     const handleChangeCategory=(event)=>{
         setCategory(event.target.value)
@@ -69,7 +70,9 @@ const AdminPanel = ({ uploadNft, updateNFTData, jwt_token }) => {
     const copiesChangeHandler = (e) => {
         setCopies(e.target.value);
     }
-
+    const mintHandler = (e) => {
+        setMintType(e.target.value);
+    }
     const [formIsValid, setFormValid] = useState(false)
 
     useEffect(() => {
@@ -106,7 +109,13 @@ const AdminPanel = ({ uploadNft, updateNFTData, jwt_token }) => {
         }
         
     };
-
+    const mintNFTHandler = (e) => {
+        if(mintType === "ERC721") {
+            mintNFT();
+        } else if(mintType === "ERC1155") {
+            mintNFT1155();
+        }
+    }
     const mintNFT = async (event) => {
         try{
                 setprocessingMintNFT(true)
@@ -149,6 +158,7 @@ const AdminPanel = ({ uploadNft, updateNFTData, jwt_token }) => {
                     await updateNFTData(contentHash, TOKENID, enteredAddress.toLowerCase())
                     setprocessingMintNFT(false)
                     setmintNFTstatus(true)
+                    window.alert("NFT Minted Successfully!");
                     // console.log("Token ID: ", TOKENID);
                 }
             } catch (error) {
@@ -205,6 +215,7 @@ const AdminPanel = ({ uploadNft, updateNFTData, jwt_token }) => {
                     await updateNFTData(contentHash, TOKENID, enteredAddress.toLowerCase())
                     setprocessingMintNFT(false)
                     setmintNFTstatus(true)
+                    window.alert("NFT Minted Successfully!")
                     // console.log("Token ID: ", TOKENID);
                 }
             } catch (error) {
@@ -243,16 +254,29 @@ const AdminPanel = ({ uploadNft, updateNFTData, jwt_token }) => {
                             Pinned To IPFS Success, with content Hash {contentHash}
                         </Typography>
                         <TextField id="Address" label="Address" variant="outlined" style={{width:"69%", margin:"10px auto"}} onChange={addressChangeHandler}/>
-                        <Typography variant="body2">
-                            No. of copies for minting to IRC1155
-                        </Typography>
-                        <TextField id="copies" label="No. of copies" variant="outlined" type="number" style={{width:"69%", margin:"10px auto"}} onChange={copiesChangeHandler}/>
+                        <Select
+                            onChange={mintHandler}
+                            style={{width:"50%",color:"white"}}
+                            label="Minting options"
+                        >
+                            <MenuItem value="ERC721">Mint ERC721</MenuItem>
+                            <MenuItem value="ERC1155">Mint ERC1155</MenuItem>
+                        </Select>
+                        {
+                            (mintType === "ERC1155") &&
+                            <>
+                                <Typography variant="body2">
+                                    No. of copies for minting to IRC1155
+                                </Typography>
+                                <TextField id="copies" label="No. of copies" variant="outlined" type="number" style={{width:"69%", margin:"10px auto"}} onChange={copiesChangeHandler}/>
+                            </>
+                        }
+                        
                     </CardContent>
-                    <CardActions>
+                    <CardActions className={styles.btnContainer}>
                         {!processingMintNFT? (
                         <>
-                            <Button  onClick={mintNFT} size="small" className={styles.bt}>Mint ERC721</Button>
-                            <Button  onClick={mintNFT1155} size="small" className={styles.bt}>Mint ERC1155</Button>
+                            <Button onClick={mintNFTHandler} size="small" className={styles.bt}>Mint {mintType}</Button>
                         </>): (<><CircularProgress /> Minting The NFT.....</>)}
                             
                     </CardActions>

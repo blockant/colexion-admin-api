@@ -65,16 +65,16 @@ const Addceleb=({ token,addCeleb })=>{
               defaultValue="Tier-1"
               onChange={tierHandler}
             >
-                    <MenuItem value="Tier-1">Tier-1</MenuItem>
-                    <MenuItem value="Tier-2">Tier-2</MenuItem>
-                    <MenuItem value="Tier-3">Tier-3</MenuItem>
-                  </Select>
-                </FormControl>
-              </div>
-              <div className={styles.btn_container}>
-                 <Button onClick={submitHandler} className={styles.btn}>Proceed</Button> 
-              </div>
-            </div>
+              <MenuItem value="Tier-1">Tier-1</MenuItem>
+              <MenuItem value="Tier-2">Tier-2</MenuItem>
+              <MenuItem value="Tier-3">Tier-3</MenuItem>
+            </Select>
+          </FormControl>
+        </div>
+        <div className={styles.btn_container}>
+          <Button onClick={submitHandler} className={styles.btn}>Proceed</Button> 
+        </div>
+      </div>
     </Paperbase>
   );
 }
