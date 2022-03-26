@@ -15,6 +15,7 @@ import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
 import Paperbase from "../components/Landing/Paperbase";
 import BasicModal from '../components/MUI/Modal';
+import ABI from "../ERC1155.json";
 
 const AdminPanel = ({ uploadNft, updateNFTData, jwt_token }) => {
 
@@ -189,7 +190,7 @@ const AdminPanel = ({ uploadNft, updateNFTData, jwt_token }) => {
                 const web3 = window.web3;
 
                 //deployed contract address :: 0x2496480d827E12aCAc35aA21a6Ec5b3D02e6816E
-                const contract_address = "0x2496480d827E12aCAc35aA21a6Ec5b3D02e6816E";
+                const batch_contract_address = "0x2496480d827E12aCAc35aA21a6Ec5b3D02e6816E";
                 //current wallet address
                 const accounts = await web3.eth.getAccounts();
                 //default account who will be taking actions
@@ -200,12 +201,13 @@ const AdminPanel = ({ uploadNft, updateNFTData, jwt_token }) => {
                 console.log(enteredAddress);
 
                 //creating instance of smart contract
-                const med = new web3.eth.Contract(abi,contract_address, {});
+                const med = new web3.eth.Contract(ABI,batch_contract_address, {});
 
                 //IPFS file URL
                 console.log("URL: "+fileURL);
+                
                 //minting NFT here two parameters :: enteredAddress && IPFSURL(fileURL)
-                const response = await med.methods.mintByOwner(enteredAddress,"fileURL").send({from:web3.eth.defaultAccount})
+                const response = await med.methods.mintByOwner(enteredAddress,copies,"fileURL").send({from:web3.eth.defaultAccount})
                 console.log(response)
                 if(response?.status){
                     // console.log("Transaction Hash of Minting: "+transactionHash);
@@ -254,10 +256,11 @@ const AdminPanel = ({ uploadNft, updateNFTData, jwt_token }) => {
                             Pinned To IPFS Success, with content Hash {contentHash}
                         </Typography>
                         <TextField id="Address" label="Address" variant="outlined" style={{width:"69%", margin:"10px auto"}} onChange={addressChangeHandler}/>
+                        <InputLabel id="MintingOptions" style={{fontSize: "0.75rem", position: "absolute"}}>Minting options</InputLabel>
                         <Select
                             onChange={mintHandler}
                             style={{width:"50%",color:"white"}}
-                            label="Minting options"
+                            labelId="MintingOptions"
                         >
                             <MenuItem value="ERC721">Mint ERC721</MenuItem>
                             <MenuItem value="ERC1155">Mint ERC1155</MenuItem>
