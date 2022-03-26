@@ -36,6 +36,7 @@ const categories = [
       { id: "All NFT's" },
       { id: "Minted NFT's" },
       { id: "Mint NFT", href:"/nft/create" },
+      {id: "Batch Mint NFT",href:"/nft/batchcreate"},
       { id: "NFT Sold" },
       { id: "Payments" },
     ],

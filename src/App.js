@@ -7,6 +7,7 @@ import AllUser from './pages/AllUser';
 import AdminPanel from './pages/AdminPanel';
 import Addceleb from './pages/Addceleb';
 import Allcelebs from './pages/Allcelebs';
+import Batchmint from './pages/Batchmint';
 import Registerceleb from './pages/Registerceleb'
 import { LOGIN_SUCCESS } from './actions/types'
 import Login from './pages/Login'
@@ -37,6 +38,7 @@ function App() {
 							<Route path="/users" element={<AllUser />} />
 							<Route path="/nft" element={<AllNFT />} />
 							<Route path="/nft/create" element={<AdminPanel />} />
+							<Route path="/nft/batchcreate" element={<Batchmint />} />
 							<Route path="/addceleb" element={<Addceleb />} />
 							<Route path="/registerceleb" element={<Registerceleb />} />
 							<Route path="/allceleb" element={<Allcelebs />} />
