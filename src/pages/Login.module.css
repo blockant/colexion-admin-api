@@ -5,6 +5,7 @@
     justify-content: center;
     align-items: center;
 }
+
 .login_container{
     display: flex;
     width: 800px;
@@ -76,4 +77,8 @@
 .login_forgot_pass{
   
   color: #a0a0a0;
+}
+
+input[placeholder="Email"], input[placeholder="Password"] {
+  color:rgba(0, 0, 0, 0.9) !important;
 }
