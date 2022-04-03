@@ -53,38 +53,45 @@ const Batchmint = ({ uploadNft, updateNFTData, jwt_token }) => {
             const reader = new FileReader();
             reader.onload = () => {
                 if (reader.readyState === 2) {
-                    imgarr.push(reader.result);
+                    const dataUri=reader.result
+                    const fileName=file.name
+                    imgarr.push({fileResult: file, fileName, dataUri});
                     setNftImg(reader.result);
                     setImgarr(imgarr);
-                    console.log(imgarr);
-                    console.log("Nft image set");
+                    console.log('Image Array is', imgarr)
                 }
             }
             reader.readAsDataURL(file);
         }
-
-        console.log("Image read");
-        setNftData(event.target.files)
-        console.log("Image data set");
+        // console.log("Image read");
+        // setNftData(event.target.files)
+        // console.log("Image data set");
         // console.log(event.target.files[0])
     }
 
     const jsonChangeHandler = (event) => {
-        const reader = new FileReader();
-        reader.onload = () => {
-            if (reader.readyState === 2) {
-                setNftjson(JSON.parse(reader.result));
-                console.log("Nft JSON set");
+        for(const file of event.target.files) {
+            const reader = new FileReader();
+            reader.onload = () => {
+                if (reader.readyState === 2) {
+                    console.log('Reader.result is', reader.result)
+                    const base64result = reader.result.split(',')[1];
+                    const result={...JSON.parse(atob(base64result)), fileName: file.name}
+                    console.log('Result is', result)
+                    nftjson.push(result)
+                    setNftjson(nftjson);
+                    console.log("Nft JSON is", nftjson);
+                }
             }
+            reader.readAsDataURL(file);
         }
+        // reader.readAsText(event.target.files[0]);
+        // console.log(event.target.files[0]);
+        // console.log("JSON read");
+        // setNftjson(event.target.files[0])
+        // console.log((event.target.files[0]));
         
-        reader.readAsText(event.target.files[0]);
-        console.log(event.target.files[0]);
-        console.log("JSON read");
-        setNftjson(event.target.files[0])
-        console.log((event.target.files[0]));
-        
-        console.log("JSON data set");
+        // console.log("JSON data set");
     }
 
     const addressChangeHandler = (e) =>{
@@ -116,34 +123,36 @@ const Batchmint = ({ uploadNft, updateNFTData, jwt_token }) => {
      */
     const onFormSubmitHandler = async (e) => {
         try{ 
-            console.log(imgarr.length); 
-            console.log(nftjson); 
+            console.log('Image Arr is', imgarr); 
+            console.log('NFT JSON is', nftjson); 
+            imgarr.sort((a, b) => a.fileName > b.fileName)
+            nftjson.sort((a, b) => a.fileName > b.fileName)
+            if(imgarr.length!==nftjson.length){
+                throw new Error('Count f Images and Json Must be same')
+            }
             for(let i=0;i<imgarr.length;i++)
             { 
-            setprocessingIPFSupload(true)
-            e.preventDefault();
-            console.log("hi");
-            const num=i+1
-            // console.log(enteredName, enteredBio, enteredCeleb, nftData);
-            const response=await uploadNft(jwt_token, nftjson[i][num.toString()]["Name"], nftjson[i][num.toString()]["Description"], nftData[i], nftjson[i][num.toString()]["Category"])
-            setFileURL("https://gateway.pinata.cloud/ipfs/" + response.data.nft.content_hash)
-            contentHash.push(response.data?.nft?.content_hash);
-            setContenthash(contentHash);
-            ipfsImageCloudUrl.push(response.data?.nft?.file_cloud_url);
-            setIpfsImageCloudUrl(ipfsImageCloudUrl);
-            console.log(contentHash);
-            console.log(ipfsImageCloudUrl);
-            // setSuccess(!success);
-            setprocessingIPFSupload(false)
-            setIpfsProcessedStatus(true)
-        }
-            } 
-            catch(err){
-                console.log(err)
-                setprocessingIPFSupload(false)
+                setprocessingIPFSupload(true)
+                e.preventDefault();
+                // console.log(enteredName, enteredBio, enteredCeleb, nftData);
+                // const base64result =imgarr[i].fileResult.split(',')[1];
+                const response=await uploadNft(jwt_token, nftjson[i]?.name, nftjson[i]?.description,imgarr[i].fileResult, nftjson[i]?.category)
+                setFileURL("https://gateway.pinata.cloud/ipfs/" + response.data.nft.content_hash)
+                contentHash.push(response.data?.nft?.content_hash);
+                setContenthash(contentHash);
+                ipfsImageCloudUrl.push(response.data?.nft?.file_cloud_url);
+                setIpfsImageCloudUrl(ipfsImageCloudUrl);
+                console.log('Content Hash array is',contentHash);
+                // console.log(ipfsImageCloudUrl);
+                // setSuccess(!success);
             }
-            
-        
+            setprocessingIPFSupload(false)
+            setprocessingIPFSupload(false)
+        }catch(err){
+                console.log(err)
+                alert(err.message)
+                setprocessingIPFSupload(false)
+        }    
     };
     
     
@@ -311,7 +320,7 @@ const Batchmint = ({ uploadNft, updateNFTData, jwt_token }) => {
                                             </div> */}
                                             <Carousel>
                                         {imgarr.map((img) => 
-                                            <img key={img}className={styles.img}src={img} alt="nft img" />
+                                            <img key={img.fileName}className={styles.img}src={img.dataUri} alt="nft img" />
                                         )}
                                         </Carousel>
                                             <div id="upload-profile" className={styles.upload_profile} >
@@ -339,11 +348,12 @@ const Batchmint = ({ uploadNft, updateNFTData, jwt_token }) => {
                                             </div> */}
                                             <div id="upload-profile" className={styles.upload_profile} >
                                                 <div style={{color:"white"}}>
-                                                    Upload JSON: 
+                                                    Upload JSONs: 
                                                 </div>
                                                 <input id="tf-upload-img" type="file" name="profile"
                                                     accept='JSON/*'
                                                     onChange={jsonChangeHandler}
+                                                    multiple
                                                 />
                                             </div>
                                             

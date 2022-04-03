@@ -16,7 +16,7 @@ import Typography from '@mui/material/Typography';
 import Paperbase from "../components/Landing/Paperbase";
 import BasicModal from '../components/MUI/Modal';
 import ABI from "../ERC1155.json";
-
+import getNetworkFromChainId from '../utility/utils'
 const AdminPanel = ({ uploadNft, updateNFTData, jwt_token }) => {
 
     const [success, setSuccess] = useState(false);
@@ -29,6 +29,7 @@ const AdminPanel = ({ uploadNft, updateNFTData, jwt_token }) => {
     const [nftImg, setNftImg] = useState(null);
     const [nftData, setNftData] = useState(null);
     const [contentHash,setContenthash]=useState('')
+    const [nftId,setnftId]=useState('')
     const [processingIPFSupload, setprocessingIPFSupload]=useState(false)
     const [ipfsProcessedStatus, setIpfsProcessedStatus]=useState(false)
     const [ipfsImageCloudUrl, setIpfsImageCloudUrl]=useState('')
@@ -100,6 +101,7 @@ const AdminPanel = ({ uploadNft, updateNFTData, jwt_token }) => {
             const response=await uploadNft(jwt_token, enteredName, enteredBio, nftData, category)
             setFileURL("https://gateway.pinata.cloud/ipfs/" + response.data.nft.content_hash)
             setContenthash(response.data?.nft?.content_hash);
+            setnftId(response.data?.nft?._id)
             setIpfsImageCloudUrl(response.data?.nft?.file_cloud_url)
             setSuccess(!success);
             setprocessingIPFSupload(false)
@@ -156,7 +158,9 @@ const AdminPanel = ({ uploadNft, updateNFTData, jwt_token }) => {
                     // printing the log of transaction
                     console.log("Response From mintByOwner: ", response);
                     const TOKENID = response?.events?.Transfer?.returnValues?.['2'];
-                    await updateNFTData(contentHash, TOKENID, enteredAddress.toLowerCase())
+                    const chainID=await window.web3.eth.getChainId()
+                    const network=getNetworkFromChainId(chainID)
+                    await updateNFTData(nftId, TOKENID, enteredAddress.toLowerCase(), network)
                     setprocessingMintNFT(false)
                     setmintNFTstatus(true)
                     window.alert("NFT Minted Successfully!");
