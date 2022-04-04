@@ -6,6 +6,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import PropTypes from 'prop-types'
 import { uploadNft, updateNFTData } from "../actions/nft";
 import styles from "./Batchmint.module.css";
+import TablePagination from '@mui/material/TablePagination';
 import Web3 from "web3";
 import abi from"../ERC721.json";
 import Card from '@mui/material/Card';
@@ -63,6 +64,9 @@ const Batchmint = ({ uploadNft, updateNFTData, jwt_token }) => {
     const [nftjson,setNftjson]= useState([]);
     const [enteredAddresses, setEnteredAddresses]=useState({})
     const [enteredCopies, setEnteredCopies]=useState({})
+    const [page, setPage] = useState(0);
+    const [ermint,setErmint]= useState(false);
+const [rowsPerPage, setRowsPerPage] = React.useState(5);
     //variable to store TokenID
     const handleChangeCategory=(event)=>{
         setCategory(event.target.value)
@@ -70,6 +74,14 @@ const Batchmint = ({ uploadNft, updateNFTData, jwt_token }) => {
     const handleOpenModalStatus=(event)=>{
         setOpenModalStatus(!openModalStatus)
     }
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+      };
+      
+      const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+      };
     const nftChangeHandler = (event) => {
         for(const file of event.target.files) {
             const reader = new FileReader();
@@ -126,6 +138,22 @@ const Batchmint = ({ uploadNft, updateNFTData, jwt_token }) => {
         setEnteredCopies(enteredCopies)
         console.log('Entered Copies is', enteredCopies)
     }
+    const clickHandleron = (e)=>{
+            setErmint(true);
+            if(tableHeaders.length <=4)
+            {
+            tableHeaders.push({ id: 'copy_input', label: 'No. of Copies', minWidth: 170 });
+            }  
+    }
+
+    const clickHandleroff = (e)=>{
+        setErmint(false);
+        if(tableHeaders.length ===5)
+        {
+        tableHeaders.splice(4,1);
+        }
+    }
+    console.log(tableHeaders);
     const mintHandler = (e) => {
         setMintType(e.target.value);
     }
@@ -234,6 +262,7 @@ const Batchmint = ({ uploadNft, updateNFTData, jwt_token }) => {
                 setprocessingMintNFT(false)
             }
     };
+
     // setTimeout(() => { if (success) { setSuccess(!success) } }, 3000);
     //TODO: Add paperbase
     return (
@@ -250,40 +279,50 @@ const Batchmint = ({ uploadNft, updateNFTData, jwt_token }) => {
             <main className={styles.main}>
                 {!ipfsProcessedStatus?(
                     <>
-                        <Button variant="outlined">Mint ERC721</Button>
-                        <Button variant="outlined">Mint ERC1155</Button>
+                      <div className={styles.btnContain}>
+                        <Button className={styles.btn} onClick={clickHandleroff}variant="outlined">Mint ERC721</Button>
+                        <Button  className={styles.btn}onClick={clickHandleron}variant="outlined">Mint ERC1155</Button></div>
                         {/**TODO: Add A text specifying which contract are you minting rn */}
                         <form action="" method="" onSubmit={mintBatchNFT}>
-                        <Paper sx={{ width: '100%' }}>
-                            <TableContainer sx={{ maxHeight: 440 }}>
-                                <Table stickyHeader aria-label="sticky table">
+                        <Paper >
+                            <TableContainer  component={Paper} className={styles.tableContainer} >
+                                <Table className={styles.table} stickyHeader aria-label="sticky table" sx={{ minWidth: 650 }}>
                                 <TableHead>
                                     <TableRow>
                                     {tableHeaders.map((column) => (
-                                        <TableCell key={column.id} align={column.align} style={{ top: 57, minWidth: column.minWidth }}>
+                                        <TableCell className={styles.tableHeaderCell} key={column.id} align={column.align}>
                                             {column.label}
                                         </TableCell>
                                     ))}
                                     </TableRow>
                                 </TableHead>
-                                <TableBody>
-                                    {dummyData.map((row) => {
-                                        return (
-                                        <TableRow hover key={row.contentHash}>
-                                            <TableCell align="right">{row.contentHash}</TableCell>
-                                            <TableCell align="right">{row.fileName}</TableCell>
-                                            <TableCell align="right">{'https://gateway.pinata.cloud/ipfs/'+ row.contentHash}</TableCell>
-                                            <TableCell align="right"><TextField fullWidth label="User Address" id="address" name={`address-${row.contentHash}`} onChange={addressChangeHandler}/></TableCell>
-                                            {tableHeaders.length===5? (<><TableCell align="right"><TextField fullWidth label="fullWidth" id="copies" name={`copies-${row.contentHash}`} onChange={copiesChangeHandler}/></TableCell></>): (<></>)}
+                                <TableBody style={{borderTopLeftRadius: "8px !important"}}>
+                                {dummyData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
+                                        <TableRow className={styles.row} hover key={row.contentHash}>
+                                            <TableCell className={styles.table_text} align="right">{row.contentHash}</TableCell>
+                                            <TableCell className={styles.table_text} align="right">{row.fileName}</TableCell>
+                                            <TableCell className={styles.table_text}align="right">{'https://gateway.pinata.cloud/ipfs/'+ row.contentHash}</TableCell>
+                                            {/* <TableCell className={styles.table_text} align="right">{'https://gateway.pinata.cloud/ipfs/'+ row.contentHash}</TableCell> */}
+                                            <TableCell className={styles.table_text} align="right"><TextField fullWidth label="User Address" id="address" name={`address-${row.contentHash}`} onChange={addressChangeHandler}/></TableCell>
+                                            {tableHeaders.length===5? (<><TableCell  className={styles.table_text} align="right"><TextField fullWidth label="Copies" id="copies" name={`copies-${row.contentHash}`} onChange={copiesChangeHandler}/></TableCell></>): (<></>)}
                                         </TableRow>
-                                        );
-                                    })}
+                                ))}
                                 </TableBody>
                                 </Table>
                             </TableContainer>
-                            
+                            {/* <TablePagination
+                            className={styles.pagination}
+                            rowsPerPageOptions={[5, 10, 25]}
+                            component="div"
+                            count={dummyData.length}
+                            rowsPerPage={rowsPerPage}
+                            page={page}
+                            onPageChange={handleChangePage}
+                            onRowsPerPageChange={handleChangeRowsPerPage}
+                            /> */}
                         </Paper>
-                        <Button type="submit" variant="outlined">Mint!</Button>
+                        <div className={styles.mintbtn}>
+                        {ermint?(<Button className={styles.btn}type="submit" variant="outlined">Mint ERC1155</Button>):(<Button className={styles.btn}type="submit" variant="outlined">Mint ERC721</Button>)}</div>
                         </form>
                    </>):(
                 <>
