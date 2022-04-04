@@ -22,7 +22,7 @@ import StickyHeadTable from '../components/MUI/StickyHeadTable';
 
 const tableHeaders=[
     { id: 'File Name', label: 'File Name', minWidth: 170 },
-    { id: 'content_hash', label: 'Content Hash', minWidth: 170 },
+    { id: 'content_hash', label: 'JSON File', minWidth: 170 },
     { id: 'link', label: 'Link', minWidth: 170 },
     { id: 'address_input', label: 'User Address', minWidth: 170 },
 ]
@@ -195,8 +195,10 @@ const [rowsPerPage, setRowsPerPage] = React.useState(5);
                 setprocessingIPFSupload(false)
         }    
     };
-    
-    
+    function createData(id, name, tier, category, action) {
+        return { id, name, tier, category, action };
+      }
+    const rows = dummyData.map(celeb => createData(celeb._id, celeb.name, celeb.tier, celeb.category, "update", "delete"));
     const mintBatchNFT = async (event) => {
         try{
                 setprocessingMintNFT(true)
