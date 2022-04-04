@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useParams, Navigate } from 'react-router-dom';
 import { connect, useSelector } from "react-redux";
-import {FormControl, InputLabel, TextField, Button,TextareaAutosize, Alert, Select, MenuItem} from "@mui/material";
+import {FormControl, InputLabel, TextField, Button,TextareaAutosize, Alert, Select, MenuItem, Paper, TableContainer, Table, TableHead, TableRow, TableCell, TableBody} from "@mui/material";
 import CircularProgress from '@mui/material/CircularProgress';
 import PropTypes from 'prop-types'
 import { uploadNft, updateNFTData } from "../actions/nft";
@@ -17,7 +17,28 @@ import Paperbase from "../components/Landing/Paperbase";
 import BasicModal from '../components/MUI/Modal';
 import ABI from "../ERC1155.json";
 import Carousel from 'react-material-ui-carousel'
+import StickyHeadTable from '../components/MUI/StickyHeadTable';
 
+const tableHeaders=[
+    { id: 'File Name', label: 'File Name', minWidth: 170 },
+    { id: 'content_hash', label: 'Content Hash', minWidth: 170 },
+    { id: 'link', label: 'Link', minWidth: 170 },
+    { id: 'address_input', label: 'User Address', minWidth: 170 },
+]
+const dummyData=[
+    {
+        contentHash: 'xyz',
+        fileName: '1.json'
+    },
+    {
+        contentHash: 'abc',
+        fileName: '2.json'
+    },
+    {
+        contentHash: 'qwe',
+        fileName: '3.json'
+    }
+]
 const Batchmint = ({ uploadNft, updateNFTData, jwt_token }) => {
 
     const [success, setSuccess] = useState(false);
@@ -40,7 +61,8 @@ const Batchmint = ({ uploadNft, updateNFTData, jwt_token }) => {
     const [mintType, setMintType] = useState('');
     const [imgarr,setImgarr]=useState([]);
     const [nftjson,setNftjson]= useState([]);
-   
+    const [enteredAddresses, setEnteredAddresses]=useState({})
+    const [enteredCopies, setEnteredCopies]=useState({})
     //variable to store TokenID
     const handleChangeCategory=(event)=>{
         setCategory(event.target.value)
@@ -95,27 +117,18 @@ const Batchmint = ({ uploadNft, updateNFTData, jwt_token }) => {
     }
 
     const addressChangeHandler = (e) =>{
-        setEnteredAddress(e.target.value);
+        enteredAddresses[`${e.target.name}`]=e.target.value 
+        setEnteredAddresses(enteredAddresses)
+        console.log('Entered Addresses is', enteredAddresses)
     }
     const copiesChangeHandler = (e) => {
-        setCopies(e.target.value);
+        enteredCopies[`${e.target.name}`]=e.target.value 
+        setEnteredCopies(enteredCopies)
+        console.log('Entered Copies is', enteredCopies)
     }
     const mintHandler = (e) => {
         setMintType(e.target.value);
     }
-    // const [formIsValid, setFormValid] = useState(false)
-
-    // useEffect(() => {
-    //     //Adding Debounce
-    //     const identifier = setTimeout(() => {
-    //         setFormValid(
-    //             enteredName.length > 0
-    //         )
-    //     }, 500)
-    //     return () => {
-    //         clearTimeout(identifier)
-    //     }
-    // }, [enteredName])
     /**
      * 
      * @param {Event} e 
@@ -157,15 +170,21 @@ const Batchmint = ({ uploadNft, updateNFTData, jwt_token }) => {
     
     
     const mintBatchNFT = async (event) => {
-        if(copies === "") {
-            window.alert("Please enter the number of copies!");
-            return;
-        } else if(copies <= 0) {
-            window.alert("Number of copies should be a positive integer!");
-            return;
-        }
         try{
                 setprocessingMintNFT(true)
+                const urls=[]
+                const userAddresses=[]
+                const copies=[]
+                for (const [key, value] of Object.entries(enteredAddresses)) {
+                    const contentHash=key.split('-')[0]
+                    urls.push('https://gateway.pinata.cloud/ipfs/'+ contentHash)
+                    userAddresses.push(value)
+                    if(enteredCopies[`copies-${contentHash}`]){
+                        copies.push(enteredCopies[`copies-${contentHash}`])
+                    }else{
+                        copies.push(1)
+                    }
+                 }
                 if (window.ethereum) {
                     window.web3 = new Web3(window.ethereum);
                     await window.ethereum.enable();
@@ -229,76 +248,44 @@ const Batchmint = ({ uploadNft, updateNFTData, jwt_token }) => {
                 
             </>)}
             <main className={styles.main}>
-                {ipfsProcessedStatus?(
+                {!ipfsProcessedStatus?(
                     <>
-                    <div className={styles.container}>
-                    <InputLabel id="demo-simple-select-label">Content Hashes</InputLabel>
-                    <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    value={category}
-                    label="Content Hashes"
-                    style={{width:"56%"}}
-                    >
-                        {
-                        contentHash.map((hash)=>
-                        <MenuItem key={hash} value={"Celebrities"}>{hash}</MenuItem>)
-                    }
-                                                                   
-                    </Select>   
-                     <TextField id="Address" label="Address" variant="outlined" style={{width:"69%", margin:"10px auto"}} onChange={addressChangeHandler}/>
-                     {/* <Typography variant="body2">
-                            No. of copies for minting to IRC1155
-                     </Typography> */}
-                    <TextField id="copies" label="No. of copies" variant="outlined" type="number" style={{width:"69%", margin:"10px auto"}} onChange={copiesChangeHandler}/>
-                    <div >
-                     <Button onClick={mintBatchNFT} size="small" className={styles.bt}>Mint ER1155</Button>
-                     </div>
-                     </div>
-                     </>
-                    // ipfsImageCloudUrl.map((img) =>
-            
-                        // <React.Fragment key={img}>
+                        <Button variant="outlined">Mint ERC721</Button>
+                        <Button variant="outlined">Mint ERC1155</Button>
+                        {/**TODO: Add A text specifying which contract are you minting rn */}
+                        <form action="" method="" onSubmit={mintBatchNFT}>
+                        <Paper sx={{ width: '100%' }}>
+                            <TableContainer sx={{ maxHeight: 440 }}>
+                                <Table stickyHeader aria-label="sticky table">
+                                <TableHead>
+                                    <TableRow>
+                                    {tableHeaders.map((column) => (
+                                        <TableCell key={column.id} align={column.align} style={{ top: 57, minWidth: column.minWidth }}>
+                                            {column.label}
+                                        </TableCell>
+                                    ))}
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    {dummyData.map((row) => {
+                                        return (
+                                        <TableRow hover key={row.contentHash}>
+                                            <TableCell align="right">{row.contentHash}</TableCell>
+                                            <TableCell align="right">{row.fileName}</TableCell>
+                                            <TableCell align="right">{'https://gateway.pinata.cloud/ipfs/'+ row.contentHash}</TableCell>
+                                            <TableCell align="right"><TextField fullWidth label="User Address" id="address" name={`address-${row.contentHash}`} onChange={addressChangeHandler}/></TableCell>
+                                            {tableHeaders.length===5? (<><TableCell align="right"><TextField fullWidth label="fullWidth" id="copies" name={`copies-${row.contentHash}`} onChange={copiesChangeHandler}/></TableCell></>): (<></>)}
+                                        </TableRow>
+                                        );
+                                    })}
+                                </TableBody>
+                                </Table>
+                            </TableContainer>
                             
-                        //     <Card sx={{ maxWidth: 345 }} style={{backgroundColor:"#14141f", color:"white", border:"1px solid white"}}>
-
-                        //     <CardMedia
-                        //         component="img"
-                        //         alt="Uploaded IPFS Image"
-                        //         height="140"
-                        //         image={img}
-                        //     />
-                            
-                        //     <CardContent style={{ color:"white"}}>
-                        //         <Typography gutterBottom variant="h5" component="div">
-                        //         Mint the Uploaded NFT
-                        //         </Typography>
-                        //         <Typography variant="body2">
-                        //             Pinned To IPFS Success, with content Hash {contentHash}
-                        //         </Typography>
-                        //         {/* <TextField id="Address" label="Address" variant="outlined" style={{width:"69%", margin:"10px auto"}} onChange={addressChangeHandler}/>
-                        //         <InputLabel id="MintingOptions" style={{fontSize: "0.75rem", position: "absolute"}}>Minting options</InputLabel> */}
-                            
-                        //                 {/* <Typography variant="body2">
-                        //                     No. of copies for minting to IRC1155
-                        //                 </Typography>
-                        //                 <TextField id="copies" label="No. of copies" variant="outlined" type="number" style={{width:"69%", margin:"10px auto"}} onChange={copiesChangeHandler}/> */}
-                                
-                        //     </CardContent>
-                        //     {/* <CardActions className={styles.btnContainer}>
-                        //         {!processingMintNFT? (
-                        //         <>
-                        //             <Button onClick={mintBatchNFT} size="small" className={styles.bt}>Mint ER1155</Button>
-                        //         </>): (<><CircularProgress /> Minting The NFT.....</>)}
-                                    
-                        //     </CardActions> */}
-                        //     </Card>
-                             
-                        // </React.Fragment>
-                          
-                    )
-                     
-                : (
+                        </Paper>
+                        <Button type="submit" variant="outlined">Mint!</Button>
+                        </form>
+                   </>):(
                 <>
                     <div className={styles.left}>
                         {/* <Header /> */}
