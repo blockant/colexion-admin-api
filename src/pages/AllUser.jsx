@@ -12,6 +12,7 @@ const AllUser= ({getAllUsers, user_list})=>{
         { id: 'name', label: 'Name', minWidth: 170 },
         { id: 'email', label: 'Email', minWidth: 170 },
         { id: 'email_verified', label: 'Email Verified', minWidth: 170 },
+        { id: 'role', label: 'Role', minWidth: 170}
     ]
     useEffect(() => {
         async function fetchUsers() {

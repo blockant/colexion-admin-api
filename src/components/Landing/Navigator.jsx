@@ -23,22 +23,18 @@ const categories = [
     id: "User",
     icon: <PeopleIcon />,
     children: [
-      { id: "All User",
+      { id: "All Users",
         href:"/users"
       },
-      { id: "User Permissions" },
     ],
   },
   {
     id: "NFT",
     icon: <ImageIcon/>,
     children: [
-      { id: "All NFT's" },
-      { id: "Minted NFT's" },
+      { id: "All NFT's",href:"/nft" },
       { id: "Mint NFT", href:"/nft/create" },
       {id: "Batch Mint NFT",href:"/nft/batchcreate"},
-      { id: "NFT Sold" },
-      { id: "Payments" },
     ],
   },
   {
@@ -47,15 +43,15 @@ const categories = [
     children: [
       {
         id: "All Celebrities",
-        href:"/allceleb"
+        href:"/celeb"
       },
       {
         id: "Add Celebrity",
-        href:"/addceleb"
+        href:"/celeb/add"
       },
       {
         id: "Register to Platform",
-        href:"/registerceleb"
+        href:"/celeb/register"
       },
     ],
   },

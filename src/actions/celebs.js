@@ -2,10 +2,8 @@ import axios from "axios";
 import { ADD_CELEB,DELETE_CELEB,UPDATE_CELEB,ALL_CELEBS,NO_ACTION, ERROR } from "./types";
 
 // Add celebs
-export const addCeleb = (token,name, tier, category) => async (dispatch) => {
-    const body = JSON.stringify({ name, tier, category });
-    console.log(name, tier, category);
-
+export const addCeleb = (token,name, tier, category, email) => async (dispatch) => {
+    const body = JSON.stringify({ name, tier, category, email });
     try {
         const config = {
             headers: {
@@ -14,12 +12,12 @@ export const addCeleb = (token,name, tier, category) => async (dispatch) => {
             },
         };
 
-        const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/v1/celeb`, body, config);
-        console.log(res);
-        dispatch({
-            type: ADD_CELEB,
-            payload: res.data.celeb
-        });
+        await axios.post(`${process.env.REACT_APP_API_URL}/api/v1/celeb`, body, config);
+        // console.log(res);
+        // dispatch({
+        //     type: ADD_CELEB,
+        //     payload: res.data.celeb
+        // });
     } catch (err) {
         console.log(err)
         dispatch({
@@ -62,11 +60,15 @@ export const deleteCeleb =(token, id) => async(dispatch) =>{
             },
         };
 
-        const res = await axios.delete(`${process.env.REACT_APP_API_URL}/api/v1/celeb/${id}`, config);
+        await axios.delete(`${process.env.REACT_APP_API_URL}/api/v1/celeb/${id}`, config);
+        config.params={
+            paginate: false
+        }
+        const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/v1/celeb`,config);
         console.log(res);
         dispatch({
-            type: DELETE_CELEB,
-            payload: {id}
+            type: ALL_CELEBS,
+            payload: res.data.foundCelebs
         });
     } catch (err) {
         console.log(err)

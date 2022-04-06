@@ -8,7 +8,7 @@ import { uploadNft, updateNFTData } from "../actions/nft";
 import styles from "./Batchmint.module.css";
 import TablePagination from '@mui/material/TablePagination';
 import Web3 from "web3";
-import abi from"../ERC721.json";
+import ERC721ABI from"../ERC721.json";
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
@@ -16,7 +16,7 @@ import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
 import Paperbase from "../components/Landing/Paperbase";
 import BasicModal from '../components/MUI/Modal';
-import ABI from "../ERC1155.json";
+import ERC1155ABI from "../ERC1155.json";
 import Carousel from 'react-material-ui-carousel'
 import StickyHeadTable from '../components/MUI/StickyHeadTable';
 
@@ -195,10 +195,6 @@ const [rowsPerPage, setRowsPerPage] = React.useState(5);
                 setprocessingIPFSupload(false)
         }    
     };
-    function createData(id, name, tier, category, action) {
-        return { id, name, tier, category, action };
-      }
-    const rows = dummyData.map(celeb => createData(celeb._id, celeb.name, celeb.tier, celeb.category, "update", "delete"));
     const mintBatchNFT = async (event) => {
         try{
                 setprocessingMintNFT(true)
@@ -239,7 +235,7 @@ const [rowsPerPage, setRowsPerPage] = React.useState(5);
                 console.log(enteredAddress);
 
                 //creating instance of smart contract
-                const med = new web3.eth.Contract(ABI,batch_contract_address, {});
+                const med = new web3.eth.Contract(ERC1155ABI,batch_contract_address, {});
 
                 //IPFS file URL
                 console.log("URL: "+fileURL);
@@ -279,7 +275,7 @@ const [rowsPerPage, setRowsPerPage] = React.useState(5);
                 
             </>)}
             <main className={styles.main}>
-                {!ipfsProcessedStatus?(
+                {ipfsProcessedStatus?(
                     <>
                       <div className={styles.btnContain}>
                         <Button className={styles.btn} onClick={clickHandleroff}variant="outlined">Mint ERC721</Button>

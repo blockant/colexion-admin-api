@@ -12,6 +12,9 @@ const AllUser= ({getAllNFT, nft_list})=>{
         { id: 'content_hash', label: 'content hash', minWidth: 170 },
         { id: 'name', label: 'name', minWidth: 170 },
         { id: 'createdAt', label: 'Created At', minWidth: 170 },
+        { id: 'minted', label: 'Minted to a wallet', minWidth: 170},
+        { id: 'contract_type', label: 'Contract', minWidth: 170},
+        { id: 'owner_address', label: 'Owner Address', minWidth: 170}
     ]
     useEffect(() => {
         async function fetchNFTS() {
