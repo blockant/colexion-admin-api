@@ -188,7 +188,7 @@ const [rowsPerPage, setRowsPerPage] = React.useState(5);
                 // setSuccess(!success);
             }
             setprocessingIPFSupload(false)
-            setprocessingIPFSupload(false)
+            setIpfsProcessedStatus(true)
         }catch(err){
                 console.log(err)
                 alert(err.message)
@@ -223,8 +223,8 @@ const [rowsPerPage, setRowsPerPage] = React.useState(5);
                 //setWeb3(window.web3)
                 const web3 = window.web3;
 
-                //deployed contract address :: 0x2496480d827E12aCAc35aA21a6Ec5b3D02e6816E
-                const batch_contract_address = "0x2496480d827E12aCAc35aA21a6Ec5b3D02e6816E";
+                //deployed contract address :: 0xABCe6e88635B8CA86b0d3ef77e78f1077ab2B9B0
+                const batch_contract_address = "0xABCe6e88635B8CA86b0d3ef77e78f1077ab2B9B0";
                 //current wallet address
                 const accounts = await web3.eth.getAccounts();
                 //default account who will be taking actions
@@ -238,10 +238,10 @@ const [rowsPerPage, setRowsPerPage] = React.useState(5);
                 const med = new web3.eth.Contract(ERC1155ABI,batch_contract_address, {});
 
                 //IPFS file URL
-                console.log("URL: "+fileURL);
+                // console.log("URL: "+fileURL);
                 
                 //minting NFT here two parameters :: enteredAddress && IPFSURL(fileURL)
-                const response = await med.methods.batchMintByOwner(enteredAddress,copies,"fileURL").send({from:web3.eth.defaultAccount})
+                const response = await med.methods.batchMintByOwner(userAddresses,copies,urls).send({from:web3.eth.defaultAccount})
                 console.log(response)
                 if(response?.status){
                     // console.log("Transaction Hash of Minting: "+transactionHash);
@@ -260,6 +260,73 @@ const [rowsPerPage, setRowsPerPage] = React.useState(5);
                 setprocessingMintNFT(false)
             }
     };
+
+    const mintBatchNFT721 = async (event) => {
+        try{
+                setprocessingMintNFT(true)
+                const urls=[]
+                const userAddresses=[]
+                //const copies=[]
+                for (const [key, value] of Object.entries(enteredAddresses)) {
+                    const contentHash=key.split('-')[0]
+                    urls.push('https://gateway.pinata.cloud/ipfs/'+ contentHash)
+                    userAddresses.push(value)
+                    // if(enteredCopies[`copies-${contentHash}`]){
+                    //     copies.push(enteredCopies[`copies-${contentHash}`])
+                    // }else{
+                    //     copies.push(1)
+                    // }
+                 }
+                if (window.ethereum) {
+                    window.web3 = new Web3(window.ethereum);
+                    await window.ethereum.enable();
+                }
+                if (window.web3) {
+                    window.web3 = new Web3(window.web3.currentProvider);
+                } else {
+                    return window.alert("Please install MetaMask!");
+                }
+                //setWeb3(window.web3)
+                const web3 = window.web3;
+
+                //deployed contract address :: 0x2496480d827E12aCAc35aA21a6Ec5b3D02e6816E
+                const contract_address = "0x2496480d827E12aCAc35aA21a6Ec5b3D02e6816E";
+                //current wallet address
+                const accounts = await web3.eth.getAccounts();
+                //default account who will be taking actions
+                web3.eth.defaultAccount = accounts[0];
+                console.log("Default Acoount : "+ accounts[0]);
+                
+                //entered address from UI :: (to_account) for which NFT will be minted
+                console.log(enteredAddress);
+
+                //creating instance of smart contract
+                const med = new web3.eth.Contract(ERC721ABI,contract_address, {});
+
+                //IPFS file URL
+                // console.log("URL: "+fileURL);
+                
+                //minting NFT here two parameters :: enteredAddress && IPFSURL(fileURL)
+                const response = await med.methods.batchMintByOwner(userAddresses,urls).send({from:web3.eth.defaultAccount})
+                console.log(response)
+                if(response?.status){
+                    // console.log("Transaction Hash of Minting: "+transactionHash);
+                    // printing the log of transaction
+                    console.log("Response From mintByOwner: ", response);
+                    const TOKENID = response?.events?.Transfer?.returnValues?.['2'];
+                    //const TOKENID = response?.events?.TransferSingle?.returnValues?.['2'];
+                    await updateNFTData(contentHash, TOKENID, enteredAddress.toLowerCase())
+                    setprocessingMintNFT(false)
+                    setmintNFTstatus(true)
+                    window.alert("NFT Minted Successfully!")
+                    // console.log("Token ID: ", TOKENID);
+                }
+            } catch (error) {
+                console.log("caught", error);
+                setprocessingMintNFT(false)
+            }
+    };
+
 
     // setTimeout(() => { if (success) { setSuccess(!success) } }, 3000);
     //TODO: Add paperbase
@@ -320,7 +387,7 @@ const [rowsPerPage, setRowsPerPage] = React.useState(5);
                             /> */}
                         </Paper>
                         <div className={styles.mintbtn}>
-                        {ermint?(<Button className={styles.btn}type="submit" variant="outlined">Mint ERC1155</Button>):(<Button className={styles.btn}type="submit" variant="outlined">Mint ERC721</Button>)}</div>
+                        {ermint?(<Button onClick={mintBatchNFT} className={styles.btn}type="submit" variant="outlined">Mint ERC1155</Button>):(<Button onClick={mintBatchNFT721} className={styles.btn}type="submit" variant="outlined">Mint ERC721</Button>)}</div>
                         </form>
                    </>):(
                 <>
@@ -344,7 +411,7 @@ const [rowsPerPage, setRowsPerPage] = React.useState(5);
                                             </div> */}
                                             <Carousel>
                                         {imgarr.map((img) => 
-                                            <img key={img.fileName}className={styles.img}src={img.dataUri} alt="nft img" />
+                                            <img key={img.fileName}className={styles.img} src={img.dataUri} alt="nft img" />
                                         )}
                                         </Carousel>
                                             <div id="upload-profile" className={styles.upload_profile} >
