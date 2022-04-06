@@ -1,0 +1,84 @@
+.login_background{
+    height:calc(100vh - 16px);
+    width:calc(100vw - 16px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.login_container{
+    display: flex;
+    width: 800px;
+  height: 500px;
+  border-radius: 6px;
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+}
+
+.login_logo_container{
+    width: 50%;
+  height: 100%;
+  background-color: #000;
+}
+
+.login_logo_container img{
+  margin-top: 150px;
+  width: 350px;
+  padding-left: 25px;
+}
+
+.login_form_container{
+    box-sizing: border-box;
+  font-family: Mada !important;
+  font-style: normal !important;
+    width: 50%;
+    height: 100%;
+    padding: 3em 2em;
+    text-align: center;
+}
+
+.login_title{
+  font-size: 30px;
+  margin: 0px;
+  margin-top: 40px;
+}
+
+.login_form_input{
+  padding-bottom: 15px;
+  padding-top: 15px;
+  border-radius: 4px;
+  margin-bottom:20px;
+}
+
+.login_form_input input{
+  appearance: none;
+  border: none;
+  font-size: 17px;
+}
+
+.login_form_button{
+  border-radius: 4px;
+  border: solid 1px #074173;
+  background-color: #074173;
+}
+
+.login_form_button button{
+  color: #fff;
+  background-color: #074173;
+  border: none;
+  font-size: 16px;
+}
+
+.login_form_forgot_pass{
+  padding-top: 20px;
+  border: none;
+}
+
+.login_forgot_pass{
+  
+  color: #a0a0a0;
+}
+
+input[placeholder="Email"], input[placeholder="Password"] {
+  color:rgba(0, 0, 0, 0.9) !important;
+}
