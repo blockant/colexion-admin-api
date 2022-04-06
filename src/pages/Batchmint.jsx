@@ -409,7 +409,7 @@ const [rowsPerPage, setRowsPerPage] = React.useState(5);
                                             {/* <div className="card-media">
                                                 <img id="profileimg" src={nftImg} alt="Axies" />
                                             </div> */}
-                                            <Carousel>
+                                            <Carousel indicators={false}>
                                         {imgarr.map((img) => 
                                             <img key={img.fileName}className={styles.img} src={img.dataUri} alt="nft img" />
                                         )}
