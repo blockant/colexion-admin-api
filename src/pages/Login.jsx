@@ -31,11 +31,9 @@ const Login = ({login, isAuthenticated}) => {
         }
     }, [enteredEmail, enteredPassword])
     
-    useEffect(()=>{ 
-        if(isAuthenticated) {
-            navigate("/");
-        }
-    }, [isAuthenticated]);
+    if(isAuthenticated) {
+        navigate("/");
+    }
 
     const onFormSubmitHandler = async (e) => {
 		e.preventDefault();
@@ -86,7 +84,7 @@ const Login = ({login, isAuthenticated}) => {
                         <form id="contact" action method="post" style={{ padding: '50px 40px 0px 20px' }} onSubmit={onFormSubmitHandler}>
 
                                 <fieldset className={styles.login_form_input}>
-                                    <input placeholder="Email" type="email" value={enteredEmail} onChange={emailChangeHandler} required autofocus />
+                                    <input placeholder="Email" type="email" value={enteredEmail} onChange={emailChangeHandler} required autoFocus />
                                 </fieldset>
                                 <fieldset className={styles.login_form_input}>
                                     <input placeholder="Password" type="password" required value={enteredPassword} onChange={passwordChangeHandler} />

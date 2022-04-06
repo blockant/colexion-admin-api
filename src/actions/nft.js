@@ -37,12 +37,17 @@ export const uploadNft = (token,name, bio, nftData, category) => async (dispatch
     }
 };
 
-export const updateNFTData=(contentHash, tokenid, enteredAddress)=>async(dispatch)=>{
+export const updateNFTData=(nftId, tokenid, enteredAddress, deployed_network, contract_type, quantity)=>async(dispatch)=>{
     try{
         const payload = {
-            content_hash:contentHash,
+            nftId:nftId,
             tokenId:tokenid,
-            owner_address:enteredAddress
+            owner_address:enteredAddress,
+            deployed_network: deployed_network,
+            contract_type: contract_type
+        }
+        if(quantity){
+            payload.quantity=quantity
         }
         await axios.put(`${process.env.REACT_APP_API_URL}/api/v1/nft`,payload)
         dispatch({

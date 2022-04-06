@@ -11,6 +11,7 @@ const Addceleb=({ token,addCeleb })=>{
   const navigate = useNavigate();
   const [name,setName] = useState('');
   const [tier,setTier] = useState("Tier-1");
+  const [email, setEmail]=useState('')
   const [category,setCategory] = useState("Sports");
   const nameHandler=(e)=>{
     setName(e.target.value);
@@ -23,20 +24,26 @@ const Addceleb=({ token,addCeleb })=>{
     setCategory(e.target.value);
   }
 
+  const emailHandler=(e)=>{
+    setEmail(e.target.value)
+  }
   const submitHandler=async(e)=>{
     e.preventDefault();
-    await addCeleb(token,name,tier,category);
+    await addCeleb(token,name,tier,category, email);
     window.alert("Celeb added successfully!")
     setName('');
     setTier("Tier-1");
     setCategory("Sports")
-    navigate("/allceleb")
+    navigate("/celeb")
   }
   return(
     <Paperbase>
       <div className={styles.form}>
         <div className={styles.name}>
           <TextField id="standard-basic" label="Name" onChange={nameHandler} variant="outlined" />
+        </div>
+        <div className={styles.name}>
+          <TextField id="standard-basic" label="Email" onChange={emailHandler} variant="outlined" />
         </div>
         <div className={styles.categories}>
           <FormControl variant="outlined">
@@ -50,9 +57,9 @@ const Addceleb=({ token,addCeleb })=>{
               <MenuItem value="Sports">Sports</MenuItem>
               <MenuItem value="Art">Art</MenuItem>
               <MenuItem value="Music">Music</MenuItem>
-              <MenuItem value="Domain Names">Domain Names</MenuItem>
-              <MenuItem value="Trading Cards">Trading card</MenuItem>
-              <MenuItem value="Utility">Utility</MenuItem>
+              {/* <MenuItem value="Domain Names">Domain Names</MenuItem>
+              <MenuItem value="Trading Cards">Trading card</MenuItem> */}
+              <MenuItem value="Others">Others</MenuItem>
             </Select>
           </FormControl>
         </div>

@@ -17,7 +17,7 @@ import Paperbase from "../components/Landing/Paperbase";
 import BasicModal from '../components/MUI/Modal';
 import ABI from "../ERC1155.json";
 import getNetworkFromChainId from '../utility/utils'
-const AdminPanel = ({ uploadNft, updateNFTData, jwt_token }) => {
+const AdminPanel = ({ uploadNft, updateNFTData, jwt_token, isMetaMaskConnected }) => {
 
     const [success, setSuccess] = useState(false);
     const [enteredName, setEnteredName] = useState('');
@@ -94,18 +94,22 @@ const AdminPanel = ({ uploadNft, updateNFTData, jwt_token }) => {
      * This Form Pins Data To IPFS
      */
     const onFormSubmitHandler = async (e) => {
-        try{    
-            setprocessingIPFSupload(true)
-            e.preventDefault();
-            // console.log(enteredName, enteredBio, enteredCeleb, nftData);
-            const response=await uploadNft(jwt_token, enteredName, enteredBio, nftData, category)
-            setFileURL("https://gateway.pinata.cloud/ipfs/" + response.data.nft.content_hash)
-            setContenthash(response.data?.nft?.content_hash);
-            setnftId(response.data?.nft?._id)
-            setIpfsImageCloudUrl(response.data?.nft?.file_cloud_url)
-            setSuccess(!success);
-            setprocessingIPFSupload(false)
-            setIpfsProcessedStatus(true)
+        try{
+            if(!isMetaMaskConnected){
+                alert('Connect Wallet First')
+            }else{
+                setprocessingIPFSupload(true)
+                e.preventDefault();
+                // console.log(enteredName, enteredBio, enteredCeleb, nftData);
+                const response=await uploadNft(jwt_token, enteredName, enteredBio, nftData, category)
+                setFileURL("https://gateway.pinata.cloud/ipfs/" + response.data.nft.content_hash)
+                setContenthash(response.data?.nft?.content_hash);
+                setnftId(response.data?.nft?._id)
+                setIpfsImageCloudUrl(response.data?.nft?.file_cloud_url)
+                setSuccess(!success);
+                setprocessingIPFSupload(false)
+                setIpfsProcessedStatus(true)
+            }
         }catch(err){
             console.log(err)
             setprocessingIPFSupload(false)
@@ -113,14 +117,22 @@ const AdminPanel = ({ uploadNft, updateNFTData, jwt_token }) => {
         
     };
     const mintNFTHandler = (e) => {
-        if(mintType === "ERC721") {
-            mintNFT();
-        } else if(mintType === "ERC1155") {
-            mintNFT1155();
+        if(!isMetaMaskConnected){
+            alert('Connect your Wallet first')
+        }else{
+            if(mintType === "ERC721") {
+                mintNFT();
+            } else if(mintType === "ERC1155") {
+                mintNFT1155();
+            }else{
+                alert('Illegal Mint Type!')
+            }
         }
     }
+    //Minting ERC721 Contract
     const mintNFT = async (event) => {
         try{
+                console.log('Minting ERC721')
                 setprocessingMintNFT(true)
                 if (window.ethereum) {
                     window.web3 = new Web3(window.ethereum);
@@ -151,7 +163,7 @@ const AdminPanel = ({ uploadNft, updateNFTData, jwt_token }) => {
                 //IPFS file URL
                 console.log("URL: "+fileURL);
                 //minting NFT here two parameters :: enteredAddress && IPFSURL(fileURL)
-                const response = await med.methods.mintByOwner(enteredAddress,"fileURL").send({from:web3.eth.defaultAccount})
+                const response = await med.methods.mintByOwner(enteredAddress,fileURL).send({from:web3.eth.defaultAccount})
                 console.log(response)
                 if(response?.status){
                     // console.log("Transaction Hash of Minting: "+transactionHash);
@@ -160,7 +172,7 @@ const AdminPanel = ({ uploadNft, updateNFTData, jwt_token }) => {
                     const TOKENID = response?.events?.Transfer?.returnValues?.['2'];
                     const chainID=await window.web3.eth.getChainId()
                     const network=getNetworkFromChainId(chainID)
-                    await updateNFTData(nftId, TOKENID, enteredAddress.toLowerCase(), network)
+                    await updateNFTData(nftId, TOKENID, enteredAddress.toLowerCase(), network, "ERC721")
                     setprocessingMintNFT(false)
                     setmintNFTstatus(true)
                     window.alert("NFT Minted Successfully!");
@@ -180,6 +192,7 @@ const AdminPanel = ({ uploadNft, updateNFTData, jwt_token }) => {
             return;
         }
         try{
+                console.log('Minting ERC1155')
                 setprocessingMintNFT(true)
                 if (window.ethereum) {
                     window.web3 = new Web3(window.ethereum);
@@ -211,14 +224,16 @@ const AdminPanel = ({ uploadNft, updateNFTData, jwt_token }) => {
                 console.log("URL: "+fileURL);
                 
                 //minting NFT here two parameters :: enteredAddress && IPFSURL(fileURL)
-                const response = await med.methods.mintByOwner(enteredAddress,copies,"fileURL").send({from:web3.eth.defaultAccount})
+                const response = await med.methods.mintByOwner(enteredAddress,copies, fileURL).send({from:web3.eth.defaultAccount})
                 console.log(response)
                 if(response?.status){
                     // console.log("Transaction Hash of Minting: "+transactionHash);
                     // printing the log of transaction
                     console.log("Response From mintByOwner: ", response);
                     const TOKENID = response?.events?.Transfer?.returnValues?.['2'];
-                    await updateNFTData(contentHash, TOKENID, enteredAddress.toLowerCase())
+                    const chainID=await window.web3.eth.getChainId()
+                    const network=getNetworkFromChainId(chainID)
+                    await updateNFTData(nftId, TOKENID, enteredAddress.toLowerCase(), network, "ERC1155", copies)
                     setprocessingMintNFT(false)
                     setmintNFTstatus(true)
                     window.alert("NFT Minted Successfully!")
@@ -339,12 +354,12 @@ const AdminPanel = ({ uploadNft, updateNFTData, jwt_token }) => {
                                                             <div className={styles.nftname}>
                                                                 <TextField id="Address" label="NFT Name" variant="outlined" onChange={nameChangeHandler} style={{width:"80%", margin:"0 auto"}}/>
                                                             </div>
-                                                            <div className={styles.nftowner}>
+                                                            {/* <div className={styles.nftowner}>
                                                                 <TextField id="Address" label="NFT Owner" value="colexion"  variant="outlined" style={{width:"80%", margin:"0 auto"}}/>
-                                                            </div>
-                                                            <div className={styles.celebrity}>
+                                                            </div> */}
+                                                            {/* <div className={styles.celebrity}>
                                                                 <TextField id="Address" label="Celebrity Name" variant="outlined" style={{width:"80%", margin:"0 auto"}}/>
-                                                            </div>
+                                                            </div> */}
                                                             <InputLabel id="demo-simple-select-label">Category</InputLabel>
                                                                 <Select
                                                                     labelId="demo-simple-select-label"
@@ -392,7 +407,8 @@ const AdminPanel = ({ uploadNft, updateNFTData, jwt_token }) => {
 
 
 const mapStateToProps = (state) => ({
-    jwt_token: state.auth.jwt_token
+    jwt_token: state.auth.jwt_token,
+    isMetaMaskConnected: state.metamask.isMetaMaskConnected
 });
 
 const mapDispatchToProps = {

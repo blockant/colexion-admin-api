@@ -20,12 +20,16 @@ import TablePagination from '@mui/material/TablePagination';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 
-const  Allcelebs =({token, getAllCelebs, deleteCeleb, updateCeleb})=> {
+const  Allcelebs =({token, getAllCelebs, deleteCeleb, updateCeleb, celeb_list})=> {
   
-const [celebList, setCelebList] = useState([]);
 const [page, setPage] = React.useState(0);
 const [rowsPerPage, setRowsPerPage] = React.useState(5);
-
+useEffect(() => {
+  async function fetchUsers() {
+    await getAllCelebs(token);
+  }
+  fetchUsers()
+}, [getAllCelebs, token])
 // const handleChangePage = (event, newPage) => {
 //   setPage(newPage);
 // };
@@ -36,11 +40,7 @@ const [rowsPerPage, setRowsPerPage] = React.useState(5);
 // };
 const deleteceleb = async (id)=>{
   try {
-      console.log(id);
-  const response = await deleteCeleb(token, id);
-      console.log(response);
-      const newp =celebList.filter(celeb => id!==celeb._id);
-      setCelebList(newp);
+      await deleteCeleb(token, id);
   } catch (err) {
       console.log(err);
   }
@@ -49,7 +49,7 @@ const deleteceleb = async (id)=>{
 const updateceleb = async (id)=>{
   try {
       console.log(id);
-  const response = await updateCeleb(token, id);
+      const response = await updateCeleb(token, id);
       console.log(response);
      
       // setCelebList(newp);
@@ -58,19 +58,6 @@ const updateceleb = async (id)=>{
   }
 };
 
-useEffect(() => {
-    async function fetchUsers() {
-        console.log(token);
-        const res = await getAllCelebs(token);
-        console.log(res);
-        setCelebList(res);
-    }
-    fetchUsers()
-}, [getAllCelebs])
-
-function createData(id, name, tier, category, action) {
-  return { id, name, tier, category, action };
-}
 const handleChangePage = (event, newPage) => {
   setPage(newPage);
 };
@@ -80,31 +67,31 @@ const handleChangeRowsPerPage = (event) => {
   setPage(0);
 };
 
-const rows = celebList.map(celeb => createData(celeb._id, celeb.name, celeb.tier, celeb.category, "update", "delete"));
   return (
     <Paperbase>
     <TableContainer component={Paper} className={styles.tableContainer}>
       <Table className={styles.table} sx={{ minWidth: 650 }} >
         <TableHead>
           <TableRow>
+          <TableCell className={styles.tableHeaderCell}>Id</TableCell>
             <TableCell className={styles.tableHeaderCell}>NAME</TableCell>
             <TableCell className={styles.tableHeaderCell}>TIER</TableCell>
+            <TableCell className={styles.tableHeaderCell}>EMAIL</TableCell>
             <TableCell className={styles.tableHeaderCell}>CATEGORY</TableCell>
             <TableCell className={styles.tableHeaderCell}>ACTION</TableCell>
           </TableRow>
         </TableHead>
         <TableBody style={{borderTopLeftRadius: "8px !important"}}>
-          {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
-            <TableRow
-              key={row.id}
-              className={styles.row}
-            >
+          {celeb_list?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)?.map((row) => (
+            <TableRow key={row._id} className={styles.row}>
+              <TableCell className={styles.table_text}>{row._id}</TableCell>
               <TableCell className={styles.table_text}>{row.name}</TableCell>
               <TableCell className={styles.table_text}>{row.tier}</TableCell>
+              <TableCell className={styles.table_text}>{row.email}</TableCell>
               <TableCell className={styles.table_text}>{row.category}</TableCell>
               <TableCell className={styles.table_text}>
-                <Link to={`/update/${row.id}`}><EditIcon className={styles.icon} /></Link>
-                <DeleteIcon className={styles.icon} onClick={()=>deleteceleb(row.id)}/>
+                <Link to={`/update/${row._id}`}><EditIcon className={styles.icon} /></Link>
+                <DeleteIcon className={styles.icon} onClick={()=>deleteceleb(row._id)}/>
               </TableCell>
             </TableRow>
           ))}
@@ -115,7 +102,7 @@ const rows = celebList.map(celeb => createData(celeb._id, celeb.name, celeb.tier
           className={styles.pagination}
           rowsPerPageOptions={[5, 10, 25]}
           component="div"
-          count={rows.length}
+          count={celeb_list?.length || 0}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}
@@ -126,7 +113,8 @@ const rows = celebList.map(celeb => createData(celeb._id, celeb.name, celeb.tier
 }
 
 const mapStateToProps = (state) => ({
-  token: state.auth.jwt_token
+  token: state.auth.jwt_token,
+  celeb_list: state.celebs.celeb_list
 });
 
 const mapDispatchToProps = {

@@ -35,21 +35,14 @@ function App() {
 								}
 							/>
 							<Route path="/login" element={<Login />} />
-							<Route path="/users" element={<AllUser />} />
-							<Route path="/nft" element={<AllNFT />} />
-							<Route path="/nft/create" element={<AdminPanel />} />
-							<Route path="/nft/batchcreate" element={<Batchmint />} />
-							<Route path="/addceleb" element={<Addceleb />} />
-							<Route path="/registerceleb" element={<Registerceleb />} />
-							<Route path="/allceleb" element={<Allcelebs />} />
-							<Route path="/update/:id" element={<Update/>} />
-
-							{/* <Route exact path="/login" component={LoginComponent} />
-						<Route exact path="/signup" component={SignUpComponent} />
-						<Route exact path="/marketplace" component={GameList} />
-						<Route exact path="/profile" component={ProfileComponent} />
-						<Route exact path="/game/:gameId/earn" render={()=>(<InGameItems type='earn'/>)}/>
-						<Route exact path="/game/:gameId/buy" render={()=>(<InGameItems type='buy'/>)}/> */}
+							<Route path="/users" element={<ProtectedRoutes><AllUser /></ProtectedRoutes>} />
+							<Route path="/nft" element={<ProtectedRoutes><AllNFT /></ProtectedRoutes>} />
+							<Route path="/nft/create" element={<ProtectedRoutes><AdminPanel /></ProtectedRoutes>} />
+							<Route path="/nft/batchcreate" element={<ProtectedRoutes><Batchmint /></ProtectedRoutes>} />
+							<Route path="/celeb/add" element={<ProtectedRoutes><Addceleb /></ProtectedRoutes>} />
+							<Route path="/celeb/register" element={<ProtectedRoutes><Registerceleb /></ProtectedRoutes>} />
+							<Route path="/celeb" element={<ProtectedRoutes><Allcelebs /></ProtectedRoutes>} />
+							<Route path="/update/:id" element={<ProtectedRoutes><Update/></ProtectedRoutes>} />
 						</Routes>
 					</>
 				</Router>

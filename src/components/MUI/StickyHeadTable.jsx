@@ -38,15 +38,16 @@ export default function StickyHeadTable({columns, rows}) {
           </TableHead>
           <TableBody style={{borderTopLeftRadius: "8px !important"}}>
             {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
+                console.log('Row is ', row)
                 return (
-                  <TableRow hover role="checkbox"  className={styles.row} tabIndex={-1} key={row.code}>
+                  <TableRow hover role="checkbox"  className={styles.row} tabIndex={-1} key={row._id}>
                     {columns.map((column) => {
                       const value = row[column.id];
-                      console.log(`Column id is ${column.id} value is ${value} type of value ${typeof value}`)
                       return (
                         <TableCell className={styles.table_text} key={column.id} align={column.align}>
                           {column.format && typeof value === 'number'? column.format(value): value}
                           {typeof value==='boolean'? (value===false? 'False': 'True'): ('')}
+                          {column.id==='contract_type' && !value? 'Not Minted Yet': ''}
                         </TableCell>
                       );
                     })}
