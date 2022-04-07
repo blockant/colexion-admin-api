@@ -38,7 +38,7 @@ export default function StickyHeadTable({columns, rows}) {
           </TableHead>
           <TableBody style={{borderTopLeftRadius: "8px !important"}}>
             {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                console.log('Row is ', row)
+                // console.log('Row is ', row)
                 return (
                   <TableRow hover role="checkbox"  className={styles.row} tabIndex={-1} key={row._id}>
                     {columns.map((column) => {

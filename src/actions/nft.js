@@ -4,8 +4,6 @@ import { NFT_UPLOAD, ERROR, NO_ACTION, ALL_NFTS } from "./types";
 //  (PIN TO IPFS)
 export const uploadNft = (token,name, bio, nftData, category) => async (dispatch) => {
     const body = JSON.stringify({ name, bio, category });
-    console.log(token,name, bio, nftData)
-
     const formData = new FormData();
     formData.append('file', nftData);
     formData.append("name", name);
@@ -22,7 +20,6 @@ export const uploadNft = (token,name, bio, nftData, category) => async (dispatch
         };
 
         const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/v1/nft/upload`, formData, config);
-        console.log(res);
         dispatch({
             type: NFT_UPLOAD,
             payload: res.data.nft

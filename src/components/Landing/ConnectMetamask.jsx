@@ -1,8 +1,9 @@
 import React, {useEffect} from "react";
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import Button from '@mui/material/Button';
+import {Button} from '@mui/material';
 import Web3 from 'web3';
+import styles from "./connect.module.css"
 import { loginMetaMask } from '../../actions/metamask'
 import ApproveToken from "./ApproveToken";
 const ConnectMetaMask= ({loginMetaMask, isMetaMaskConnected, metaMaskAddress, metaMaskBalance})=>{
@@ -27,7 +28,8 @@ const ConnectMetaMask= ({loginMetaMask, isMetaMaskConnected, metaMaskAddress, me
     }
   return (
       <>
-       <Button variant="contained" onClick={connectToMetaMask}>Connect To Metamask</Button>
+       <div className={styles.cnct}>
+       <Button className={styles.bt} variant="contained" onClick={connectToMetaMask}>Connect To Metamask</Button></div>
        {isMetaMaskConnected? <><h1>Metamask connected: Address {metaMaskAddress} </h1><br/><ApproveToken/></>: <></>}
       </>
   );

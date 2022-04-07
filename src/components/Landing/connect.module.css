@@ -1,0 +1,16 @@
+.bt{
+    
+    padding: 1.5px 2px !important;
+    width: 257px !important;
+    height: 60px !important;
+    border-radius: 15px !important;
+    background-image: linear-gradient(black, black), linear-gradient(to right, #f301af, #4844fd) !important;
+    background-clip: content-box, border-box;
+    color: white!important;
+}
+.cnct{
+    display: flex !important;
+    text-align: center !important;
+    justify-content: center !important;
+    align-items: center !important;
+}

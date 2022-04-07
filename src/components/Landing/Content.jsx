@@ -15,7 +15,7 @@ function Content({ isMetaMaskConnected, metaMaskAddress, table }) {
     
     <Grid container spacing={2}>
       <Grid item xs={12}>
-      <Paper>
+      
         {isMetaMaskConnected ? (
               <>
                 <ApproveToken></ApproveToken>
@@ -25,7 +25,7 @@ function Content({ isMetaMaskConnected, metaMaskAddress, table }) {
             )}
           <Typography color="text.secondary" align="right">
           </Typography>
-        </Paper>
+        
       </Grid>
       <Grid item xs={12} style={{ maxHeight: 0}}>
         <Paper sx={{ margin: "auto" }}>

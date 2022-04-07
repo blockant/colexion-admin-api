@@ -19,28 +19,10 @@ import BasicModal from '../components/MUI/Modal';
 import ERC1155ABI from "../ERC1155.json";
 import Carousel from 'react-material-ui-carousel'
 import StickyHeadTable from '../components/MUI/StickyHeadTable';
+import getNetworkFromChainId from '../utility/utils';
 
-const tableHeaders=[
-    { id: 'File Name', label: 'File Name', minWidth: 170 },
-    { id: 'content_hash', label: 'JSON File', minWidth: 170 },
-    { id: 'link', label: 'Link', minWidth: 170 },
-    { id: 'address_input', label: 'User Address', minWidth: 170 },
-]
-const dummyData=[
-    {
-        contentHash: 'xyz',
-        fileName: '1.json'
-    },
-    {
-        contentHash: 'abc',
-        fileName: '2.json'
-    },
-    {
-        contentHash: 'qwe',
-        fileName: '3.json'
-    }
-]
-const Batchmint = ({ uploadNft, updateNFTData, jwt_token }) => {
+//const tableHeaders=[{ id: 'fileName', label: 'File(s) Name', minWidth: 170 },{ id: 'nft_link', label: 'Link', minWidth: 170 },{ id: 'address_input', label: 'User Address', minWidth: 170 }]
+const Batchmint = ({ uploadNft, updateNFTData, jwt_token, isMetaMaskConnected }) => {
 
     const [success, setSuccess] = useState(false);
     const [enteredName, setEnteredName] = useState('');
@@ -62,10 +44,16 @@ const Batchmint = ({ uploadNft, updateNFTData, jwt_token }) => {
     const [mintType, setMintType] = useState('');
     const [imgarr,setImgarr]=useState([]);
     const [nftjson,setNftjson]= useState([]);
+    const [nftProcessedData,setNftProcessedData]= useState([]);
     const [enteredAddresses, setEnteredAddresses]=useState({})
     const [enteredCopies, setEnteredCopies]=useState({})
     const [page, setPage] = useState(0);
     const [ermint,setErmint]= useState(false);
+    const [tableHeaders, setTableHeaders]=useState([
+        { id: 'fileName', label: 'File(s) Name' },
+        { id: 'nft_link', label: 'Link' },
+        { id: 'address_input', label: 'User Address' }
+    ])
 const [rowsPerPage, setRowsPerPage] = React.useState(5);
     //variable to store TokenID
     const handleChangeCategory=(event)=>{
@@ -140,20 +128,22 @@ const [rowsPerPage, setRowsPerPage] = React.useState(5);
     }
     const clickHandleron = (e)=>{
             setErmint(true);
-            if(tableHeaders.length <=4)
+            if(tableHeaders.length===3)
             {
-            tableHeaders.push({ id: 'copy_input', label: 'No. of Copies', minWidth: 170 });
+                tableHeaders.push({ id: 'copy_input', label: 'No. of Copies', minWidth: 170 });
+                setTableHeaders(tableHeaders)
             }  
     }
 
     const clickHandleroff = (e)=>{
         setErmint(false);
-        if(tableHeaders.length ===5)
+        if(tableHeaders.length ===4)
         {
-        tableHeaders.splice(4,1);
+            tableHeaders.splice(3,1);
+            setTableHeaders(tableHeaders)
         }
     }
-    console.log(tableHeaders);
+    // console.log(tableHeaders);
     const mintHandler = (e) => {
         setMintType(e.target.value);
     }
@@ -163,32 +153,45 @@ const [rowsPerPage, setRowsPerPage] = React.useState(5);
      * This Form Pins Data To IPFS
      */
     const onFormSubmitHandler = async (e) => {
-        try{ 
-            console.log('Image Arr is', imgarr); 
-            console.log('NFT JSON is', nftjson); 
-            imgarr.sort((a, b) => a.fileName > b.fileName)
-            nftjson.sort((a, b) => a.fileName > b.fileName)
-            if(imgarr.length!==nftjson.length){
-                throw new Error('Count f Images and Json Must be same')
-            }
-            for(let i=0;i<imgarr.length;i++)
-            { 
-                setprocessingIPFSupload(true)
-                e.preventDefault();
-                // console.log(enteredName, enteredBio, enteredCeleb, nftData);
-                // const base64result =imgarr[i].fileResult.split(',')[1];
-                const response=await uploadNft(jwt_token, nftjson[i]?.name, nftjson[i]?.description,imgarr[i].fileResult, nftjson[i]?.category)
-                setFileURL("https://gateway.pinata.cloud/ipfs/" + response.data.nft.content_hash)
-                contentHash.push(response.data?.nft?.content_hash);
-                setContenthash(contentHash);
-                ipfsImageCloudUrl.push(response.data?.nft?.file_cloud_url);
-                setIpfsImageCloudUrl(ipfsImageCloudUrl);
-                console.log('Content Hash array is',contentHash);
-                // console.log(ipfsImageCloudUrl);
-                // setSuccess(!success);
-            }
-            setprocessingIPFSupload(false)
-            setprocessingIPFSupload(false)
+        try{
+            if(!isMetaMaskConnected){
+                alert('Connect Metamsk First!')
+            }else{
+                console.log('Image Arr is', imgarr); 
+                console.log('NFT JSON is', nftjson); 
+                imgarr.sort((a, b) => a.fileName > b.fileName)
+                nftjson.sort((a, b) => a.fileName > b.fileName)
+                if(imgarr.length!==nftjson.length){
+                    throw new Error('Count f Images and Json Must be same')
+                }
+                console.log('Processed Status before Submit', ipfsProcessedStatus)
+                const processedData=[]
+                for(let i=0;i<imgarr.length;i++)
+                { 
+                    setprocessingIPFSupload(true)
+                    e.preventDefault();
+                    // console.log(enteredName, enteredBio, enteredCeleb, nftData);
+                    // const base64result =imgarr[i].fileResult.split(',')[1];
+                    const response=await uploadNft(jwt_token, nftjson[i]?.name, nftjson[i]?.description,imgarr[i].fileResult, nftjson[i]?.category)
+                    contentHash.push(response.data?.nft?.content_hash);
+                    setContenthash(contentHash);
+                    ipfsImageCloudUrl.push(response.data?.nft?.file_cloud_url);
+                    setIpfsImageCloudUrl(ipfsImageCloudUrl);
+                    console.log('Content Hash array is',contentHash);
+                    processedData.push({
+                        nft_link: "https://gateway.pinata.cloud/ipfs/" + response.data.nft.content_hash,
+                        fileName: `${imgarr[i].fileName}/${nftjson[i].fileName}`,
+                        nft_id: response.data.nft._id,
+                        contentHash: response.data.nft.content_hash
+                    })
+                    // console.log(ipfsImageCloudUrl);
+                    // setSuccess(!success);
+                }
+                setNftProcessedData(processedData)
+                setprocessingIPFSupload(false)
+                setIpfsProcessedStatus(true)
+                console.log('Processed After before Submit', ipfsProcessedStatus)
+            } 
         }catch(err){
                 console.log(err)
                 alert(err.message)
@@ -197,69 +200,99 @@ const [rowsPerPage, setRowsPerPage] = React.useState(5);
     };
     const mintBatchNFT = async (event) => {
         try{
+                event.preventDefault()
                 setprocessingMintNFT(true)
                 const urls=[]
                 const userAddresses=[]
                 const copies=[]
-                for (const [key, value] of Object.entries(enteredAddresses)) {
-                    const contentHash=key.split('-')[0]
-                    urls.push('https://gateway.pinata.cloud/ipfs/'+ contentHash)
-                    userAddresses.push(value)
-                    if(enteredCopies[`copies-${contentHash}`]){
-                        copies.push(enteredCopies[`copies-${contentHash}`])
-                    }else{
-                        copies.push(1)
+                const nftIds=[]
+                if(Object.keys(enteredAddresses).length!==nftProcessedData.length || (ermint && (Object.keys(enteredCopies).length!==nftProcessedData.length)) ){
+                    alert('All Addresses and copies must be filled')
+                }else{
+                    for (const [key, value] of Object.entries(enteredAddresses)) {
+                        const contentHash=key.split('-')[2]
+                        const nftId=key.split('-')[1]
+                        urls.push('https://gateway.pinata.cloud/ipfs/'+ contentHash)
+                        userAddresses.push(value)
+                        nftIds.push(nftId)
+                        //True Value of ERMINT Implies it's ERC1155, hence copies are required
+                        if(ermint){
+                            if(enteredCopies[`copies-${nftId}-${contentHash}`]){
+                                copies.push(enteredCopies[`copies-${nftId}-${contentHash}`])
+                            }else{
+                                copies.push(1)
+                            }
+                        }
                     }
-                 }
-                if (window.ethereum) {
-                    window.web3 = new Web3(window.ethereum);
-                    await window.ethereum.enable();
-                }
-                if (window.web3) {
-                    window.web3 = new Web3(window.web3.currentProvider);
-                } else {
-                    return window.alert("Please install MetaMask!");
-                }
-                //setWeb3(window.web3)
-                const web3 = window.web3;
-
-                //deployed contract address :: 0x2496480d827E12aCAc35aA21a6Ec5b3D02e6816E
-                const batch_contract_address = "0x2496480d827E12aCAc35aA21a6Ec5b3D02e6816E";
-                //current wallet address
-                const accounts = await web3.eth.getAccounts();
-                //default account who will be taking actions
-                web3.eth.defaultAccount = accounts[0];
-                console.log("Default Acoount : "+ accounts[0]);
-                
-                //entered address from UI :: (to_account) for which NFT will be minted
-                console.log(enteredAddress);
-
-                //creating instance of smart contract
-                const med = new web3.eth.Contract(ERC1155ABI,batch_contract_address, {});
-
-                //IPFS file URL
-                console.log("URL: "+fileURL);
-                
-                //minting NFT here two parameters :: enteredAddress && IPFSURL(fileURL)
-                const response = await med.methods.batchMintByOwner(enteredAddress,copies,"fileURL").send({from:web3.eth.defaultAccount})
-                console.log(response)
-                if(response?.status){
-                    // console.log("Transaction Hash of Minting: "+transactionHash);
-                    // printing the log of transaction
-                    console.log("Response From mintByOwner: ", response);
-                    const TOKENID = response?.events?.TransferSingle?.returnValues?.['3'];
-                    //const TOKENID = response?.events?.TransferSingle?.returnValues?.['3'];
-                    await updateNFTData(contentHash, TOKENID, enteredAddress.toLowerCase())
+                    console.log('NFT Id To Addresses',nftIds)
+                    if (window.ethereum) {
+                        window.web3 = new Web3(window.ethereum);
+                        await window.ethereum.enable();
+                    }
+                    if (window.web3) {
+                        window.web3 = new Web3(window.web3.currentProvider);
+                    } else {
+                        return window.alert("Please install MetaMask!");
+                    }
+                    //setWeb3(window.web3)
+                    const web3 = window.web3;
+                    //current wallet address
+                    const accounts = await web3.eth.getAccounts();
+                    //default account who will be taking actions
+                    web3.eth.defaultAccount = accounts[0];
+                    console.log("Default Acoount : "+ accounts[0]);
+                    //deployed contract address :: 0xABCe6e88635B8CA86b0d3ef77e78f1077ab2B9B0
+                    if(ermint){
+                        const contract_address = "0xABCe6e88635B8CA86b0d3ef77e78f1077ab2B9B0";
+                        //creating instance of smart contract
+                        const med = new web3.eth.Contract(ERC1155ABI,contract_address, {});
+                        //minting NFT here two parameters :: enteredAddress && IPFSURL(fileURL)
+                        const response = await med.methods.batchMintByOwner(userAddresses,copies,urls).send({from:web3.eth.defaultAccount})
+                        console.log('Response of batch mint ERC1155', response)
+                        if(response?.status){
+                            const transferEvent = response?.events?.Transfer
+                            const chainID=await window.web3.eth.getChainId()
+                            const network=getNetworkFromChainId(chainID)
+                            //Optimise Currently, O(n^2)
+                            for (let index=0; index<userAddresses.length; index++) {
+                                console.log('Transfer Return values are', transferEvent[index].returnValues)
+                                if(transferEvent[index].returnValues?.tokenId){
+                                    await updateNFTData(nftIds[index], transferEvent[index].returnValues?.tokenId, userAddresses[index], network, "ERC1155", copies[index])
+                                }
+                            }
+                        }
+                    }else{
+                        const contract_address = "0x2496480d827E12aCAc35aA21a6Ec5b3D02e6816E";
+                        //creating instance of smart contract
+                        const med = new web3.eth.Contract(ERC721ABI,contract_address, {});
+                        const response = await med.methods.batchMintByOwner(userAddresses,urls).send({from:web3.eth.defaultAccount})
+                        console.log(response)
+                        if(response?.status){
+                            console.log("Response From batchMint ERC721: ", response);
+                            const transferEvent = response?.events?.Transfer
+                            const chainID=await window.web3.eth.getChainId()
+                            const network=getNetworkFromChainId(chainID)
+                            //Optimise Currently, O(n^2)
+                            for (let index=0; index<userAddresses.length; index++) {
+                                console.log('Transfer Return values are', transferEvent[index].returnValues)
+                                if(transferEvent[index].returnValues?.tokenId){
+                                    await updateNFTData(nftIds[index], transferEvent[index].returnValues?.tokenId, userAddresses[index], network, "ERC721")
+                                }
+                            }
+                            setprocessingMintNFT(false)
+                            setmintNFTstatus(true)
+                            window.alert("NFT Minted Successfully!")
+                        }
+                    }
                     setprocessingMintNFT(false)
-                    setmintNFTstatus(true)
-                    window.alert("NFT Minted Successfully!")
-                    // console.log("Token ID: ", TOKENID);
-                }
-            } catch (error) {
-                console.log("caught", error);
+                }         
+            } catch (err) {
+                console.log("caught", err);
                 setprocessingMintNFT(false)
+                alert(err.message)
             }
     };
+
 
     // setTimeout(() => { if (success) { setSuccess(!success) } }, 3000);
     //TODO: Add paperbase
@@ -295,32 +328,32 @@ const [rowsPerPage, setRowsPerPage] = React.useState(5);
                                     </TableRow>
                                 </TableHead>
                                 <TableBody style={{borderTopLeftRadius: "8px !important"}}>
-                                {dummyData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
-                                        <TableRow className={styles.row} hover key={row.contentHash}>
-                                            <TableCell className={styles.table_text} align="right">{row.contentHash}</TableCell>
+                                {nftProcessedData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
+                                        <TableRow className={styles.row} hover key={row.nft_link}>
                                             <TableCell className={styles.table_text} align="right">{row.fileName}</TableCell>
-                                            <TableCell className={styles.table_text}align="right">{'https://gateway.pinata.cloud/ipfs/'+ row.contentHash}</TableCell>
+                                            <TableCell className={styles.table_text} align="right">{row.nft_link}</TableCell>
                                             {/* <TableCell className={styles.table_text} align="right">{'https://gateway.pinata.cloud/ipfs/'+ row.contentHash}</TableCell> */}
-                                            <TableCell className={styles.table_text} align="right"><TextField fullWidth label="User Address" id="address" name={`address-${row.contentHash}`} onChange={addressChangeHandler}/></TableCell>
-                                            {tableHeaders.length===5? (<><TableCell  className={styles.table_text} align="right"><TextField fullWidth label="Copies" id="copies" name={`copies-${row.contentHash}`} onChange={copiesChangeHandler}/></TableCell></>): (<></>)}
+                                            <TableCell className={styles.table_text} align="right"><TextField fullWidth label="User Address" id="address" name={`address-${row.nft_id}-${row.contentHash}`} onChange={addressChangeHandler}/></TableCell>
+                                            {ermint? (<><TableCell  className={styles.table_text} align="right"><TextField fullWidth label="Copies" id="copies" name={`copies-${row.nft_id}-${row.contentHash}`} onChange={copiesChangeHandler}/></TableCell></>): (<></>)}
                                         </TableRow>
                                 ))}
                                 </TableBody>
                                 </Table>
                             </TableContainer>
-                            {/* <TablePagination
+                            <TablePagination
                             className={styles.pagination}
                             rowsPerPageOptions={[5, 10, 25]}
                             component="div"
-                            count={dummyData.length}
+                            count={nftProcessedData.length}
                             rowsPerPage={rowsPerPage}
                             page={page}
                             onPageChange={handleChangePage}
                             onRowsPerPageChange={handleChangeRowsPerPage}
-                            /> */}
+                            />
                         </Paper>
                         <div className={styles.mintbtn}>
-                        {ermint?(<Button className={styles.btn}type="submit" variant="outlined">Mint ERC1155</Button>):(<Button className={styles.btn}type="submit" variant="outlined">Mint ERC721</Button>)}</div>
+                           {processingMintNFT?(<><Button className={styles.btn} variant="outlined">Processing ...</Button></>):(<><Button onClick={mintBatchNFT} className={styles.btn}type="submit" variant="outlined">{ermint? "Mint ERC1155":"Mint ERC721"}</Button></>)} 
+                        </div>
                         </form>
                    </>):(
                 <>
@@ -342,9 +375,9 @@ const [rowsPerPage, setRowsPerPage] = React.useState(5);
                                             {/* <div className="card-media">
                                                 <img id="profileimg" src={nftImg} alt="Axies" />
                                             </div> */}
-                                            <Carousel>
+                                            <Carousel indicators={false}>
                                         {imgarr.map((img) => 
-                                            <img key={img.fileName}className={styles.img}src={img.dataUri} alt="nft img" />
+                                            <img key={img.fileName}className={styles.img} src={img.dataUri} alt="nft img" />
                                         )}
                                         </Carousel>
                                             <div id="upload-profile" className={styles.upload_profile} >
@@ -444,7 +477,8 @@ const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
 
 const mapStateToProps = (state) => ({
-    jwt_token: state.auth.jwt_token
+    jwt_token: state.auth.jwt_token,
+    isMetaMaskConnected: state.metamask.isMetaMaskConnected
 });
 
 const mapDispatchToProps = {

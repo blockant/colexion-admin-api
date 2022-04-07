@@ -5,12 +5,17 @@ import List from "@mui/material/List";
 import Box from "@mui/material/Box";
 import {Link} from "react-router-dom";
 import ListItem from "@mui/material/ListItem";
+import {Button} from "@mui/material";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import PeopleIcon from "@mui/icons-material/People";
 import ImageIcon from '@mui/icons-material/Image';
 import { Navigate } from 'react-router-dom';
+import PropTypes from 'prop-types'
+import { connect } from 'react-redux'
+import { logout } from "../../actions/auth.js";
+import styles from "./nav.module.css";
 
 // import Accordion from '@mui/material/Accordion';
 // import AccordionDetails from '@mui/material/AccordionDetails';
@@ -72,7 +77,7 @@ const itemCategory = {
   px: 3,
 };
 
-export default function Navigator(props) {
+const Navigator = ({ logout, isAuthenticated },props) => {
   const { ...other } = props;
   const navigationHandler=(href)=>{
     // console.log(event)
@@ -81,14 +86,22 @@ export default function Navigator(props) {
       return <Navigate to={href} />;
     }
   }
+
+  const onLogoutHandler = () => {
+    logout()
+}
   return (
     <Drawer variant="permanent" {...other}>
       <List disablePadding>
         <ListItem sx={{ ...item, ...itemCategory, fontSize: 22, color: "#fff" }}>
+          <div className={styles.top}>
           Colexion Admin
+         <Link to="/login"> <Button name='submit' onClick={onLogoutHandler} className={styles.bt}>Logout</Button> </Link></div>
         </ListItem>
+        
         {categories.map(({ id, children, icon }) => (
           <Box key={id} sx={{ bgcolor: "#101F33" }}>
+            
             {/*TODO: Add Accordian*/}
             <ListItem sx={{ py: 2, px: 3 }}>
               <ListItemText sx={{ color: "#fff" }}>{id}</ListItemText>
@@ -110,3 +123,17 @@ export default function Navigator(props) {
     </Drawer>
   );
 }
+
+Navigator.propTypes = {
+  logout: PropTypes.func.isRequired,
+  isAuthenticated: PropTypes.bool
+}
+
+const mapStateToProps = (state) => ({
+  isAuthenticated: state.auth.isAuthenticated,
+})
+
+const mapDispatchToProps = {
+  logout
+}
+export default connect(mapStateToProps, mapDispatchToProps)(Navigator)

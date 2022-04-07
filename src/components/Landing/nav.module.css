@@ -1,0 +1,16 @@
+.bt{
+    margin-top:20px !important;
+    padding: 1.5px 2px !important;
+    width: 207px;
+    height: 50px;
+    border-radius: 150px !important;
+    background-image: linear-gradient(black, black), linear-gradient(to right, #f301af, #4844fd) !important;
+    background-clip: content-box, border-box;
+    color: white!important;
+}
+.top{
+    display: flex;
+    justify-content:center;
+    align-items:center;
+    flex-direction: column;
+}

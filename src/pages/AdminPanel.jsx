@@ -206,8 +206,8 @@ const AdminPanel = ({ uploadNft, updateNFTData, jwt_token, isMetaMaskConnected }
                 //setWeb3(window.web3)
                 const web3 = window.web3;
 
-                //deployed contract address :: 0x2496480d827E12aCAc35aA21a6Ec5b3D02e6816E
-                const batch_contract_address = "0x2496480d827E12aCAc35aA21a6Ec5b3D02e6816E";
+                //deployed contract address :: 0xABCe6e88635B8CA86b0d3ef77e78f1077ab2B9B0
+                const batch_contract_address = "0xABCe6e88635B8CA86b0d3ef77e78f1077ab2B9B0";
                 //current wallet address
                 const accounts = await web3.eth.getAccounts();
                 //default account who will be taking actions
@@ -230,7 +230,7 @@ const AdminPanel = ({ uploadNft, updateNFTData, jwt_token, isMetaMaskConnected }
                     // console.log("Transaction Hash of Minting: "+transactionHash);
                     // printing the log of transaction
                     console.log("Response From mintByOwner: ", response);
-                    const TOKENID = response?.events?.Transfer?.returnValues?.['2'];
+                    const TOKENID = response?.events?.TransferSingle?.returnValues?.['3'];
                     const chainID=await window.web3.eth.getChainId()
                     const network=getNetworkFromChainId(chainID)
                     await updateNFTData(nftId, TOKENID, enteredAddress.toLowerCase(), network, "ERC1155", copies)
@@ -280,6 +280,7 @@ const AdminPanel = ({ uploadNft, updateNFTData, jwt_token, isMetaMaskConnected }
                             onChange={mintHandler}
                             style={{width:"50%",color:"white"}}
                             labelId="MintingOptions"
+                            value={mintType}
                         >
                             <MenuItem value="ERC721">Mint ERC721</MenuItem>
                             <MenuItem value="ERC1155">Mint ERC1155</MenuItem>
