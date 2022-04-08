@@ -1,7 +1,8 @@
-import {ALL_CELEBS,NO_ACTION} from '../actions/types'
+import {ALL_CELEBS,NO_ACTION, ACTIVE_CELEB} from '../actions/types'
 
 const initialState = {
     celeb_list:[],
+	active_celeb: null
 };
 
 const celebs = (state = initialState, action) => {
@@ -13,6 +14,11 @@ const celebs = (state = initialState, action) => {
 				...state,
 				celeb_list: payload,
 			};
+		case ACTIVE_CELEB:
+			return {
+				...state,
+				active_celeb: payload
+			}
 		case NO_ACTION:
 		default:
 			return state;

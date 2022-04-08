@@ -1,13 +1,13 @@
-import React,{useState} from 'react';
+import React,{useEffect, useState} from 'react';
 import {Link,useNavigate, useParams} from 'react-router-dom';
 import axios from 'axios';
 import { connect, useSelector } from "react-redux";
 import {TextField, FormControl, InputLabel, NativeSelect, Button, Select, MenuItem} from "@mui/material";
 import Paperbase from '../components/Landing/Paperbase';
 import styles from "./Tempcelebs.module.css";
-import { updateCeleb } from '../actions/celebs';
+import { updateCeleb, getCelebById } from '../actions/celebs';
 
-const UpdateCeleb=({ updateCeleb, token })=>{
+const UpdateCeleb=({ updateCeleb, token, getCelebById , active_celeb})=>{
   let navigate = useNavigate();
   const [name,setName] = useState('');
   const [tier,setTier] = useState("Tier-1");
@@ -24,27 +24,32 @@ const UpdateCeleb=({ updateCeleb, token })=>{
   const categoryHandler=(e)=>{
     setCategory(e.target.value);
   }
-
+  useEffect(() => {
+    async function fetchActiveCeleb() {
+        await getCelebById(token, id)
+    }
+    fetchActiveCeleb()
+}, [getCelebById, token, id])
   const submitHandler=async(e)=>{
-    e.preventDefault();
-    await updateCeleb(token, id, name,tier,category);
-    navigate("/allceleb");
-    // window.alert("Celeb updated successfully!")
-    setName('');
-    setTier("Tier-1");
-    setCategory("Sports")
+    try{
+      e.preventDefault();
+      await updateCeleb(token, id, name,tier,category);
+      navigate("/celeb");
+    }catch(err){
+      console.log(err)
+    }
   }
   return(
     <Paperbase>
       <div className={styles.form}>
         <div className={styles.name}>
-          <TextField id="standard-basic" label="Name" onChange={nameHandler} variant="outlined" />
+          <TextField id="standard-basic" label="Name" onChange={nameHandler} variant="outlined" value={active_celeb?.name}/>
         </div>
         <div className={styles.categories}>
           <FormControl variant="outlined">
           <InputLabel id="category">Category</InputLabel>
             <Select
-              defaultValue="Sports"
+              defaultValue={active_celeb?.category}
               onChange={categoryHandler}
               labelId="category"
               id="demo-simple-select-standard"
@@ -52,9 +57,7 @@ const UpdateCeleb=({ updateCeleb, token })=>{
              <MenuItem value="Sports">Sports</MenuItem>
               <MenuItem value="Art">Art</MenuItem>
               <MenuItem value="Music">Music</MenuItem>
-              <MenuItem value="Domain Names">Domain Names</MenuItem>
               <MenuItem value="Trading Cards">Trading card</MenuItem>
-              <MenuItem value="Utility">Utility</MenuItem>
             </Select>
           </FormControl>
         </div>
@@ -64,8 +67,8 @@ const UpdateCeleb=({ updateCeleb, token })=>{
               Tier
             </InputLabel>
             <Select
-              defaultValue="Tier-1"
               onChange={tierHandler}
+              defaultValue={active_celeb?.tier}
             >
                     <MenuItem value="Tier-1">Tier-1</MenuItem>
                     <MenuItem value="Tier-2">Tier-2</MenuItem>
@@ -82,11 +85,13 @@ const UpdateCeleb=({ updateCeleb, token })=>{
 }
 
 const mapStateToProps = (state) => ({
-    token: state.auth.jwt_token
+    token: state.auth.jwt_token,
+    active_celeb: state.celebs.active_celeb
 });
 
 const mapDispatchToProps = {
-    updateCeleb
+    updateCeleb,
+    getCelebById
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(UpdateCeleb);
