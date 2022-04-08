@@ -8,6 +8,7 @@ export const ERROR = "ERROR"
 
 export const ADD_CELEB= "ADD_CELEB"
 export const ALL_CELEBS = "ALL_CELEBS"
+export const ACTIVE_CELEB="ACTIVE_CELEB"
 
 export const USER_LOADED = "USER_LOADED";
 export const AUTH_ERROR = "AUTH_ERROR";

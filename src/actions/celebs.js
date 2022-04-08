@@ -1,5 +1,5 @@
 import axios from "axios";
-import { ADD_CELEB,DELETE_CELEB,UPDATE_CELEB,ALL_CELEBS,NO_ACTION, ERROR } from "./types";
+import { ADD_CELEB,DELETE_CELEB,UPDATE_CELEB,ALL_CELEBS,NO_ACTION, ERROR, ACTIVE_CELEB } from "./types";
 
 // Add celebs
 export const addCeleb = (token,name, tier, category, email) => async (dispatch) => {
@@ -99,6 +99,30 @@ export const updateCeleb =(token, id, name, tier, category) => async(dispatch) =
         //     type: UPDATE_CELEB,
         //     payload: res
         // });
+    } catch (err) {
+        console.log(err)
+        dispatch({
+            type: ERROR,
+            payload: err.response.data
+        })
+    }
+}
+
+//Get Celeb By Id
+export const getCelebById =(token, id) => async(dispatch) =>{
+    try {
+        const config = {
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            },
+        };
+
+        const resp=await axios.get(`${process.env.REACT_APP_API_URL}/api/v1/celeb/${id}`, config);
+        dispatch({
+            type: ACTIVE_CELEB,
+            payload: resp.data.foundCeleb
+        });
     } catch (err) {
         console.log(err)
         dispatch({

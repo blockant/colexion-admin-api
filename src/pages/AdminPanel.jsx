@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useParams, Navigate } from 'react-router-dom';
+import { Link, useParams, Navigate , useNavigate} from 'react-router-dom';
 import { connect, useSelector } from "react-redux";
 import {FormControl, InputLabel, TextField, Button,TextareaAutosize, Alert, Select, MenuItem} from "@mui/material";
 import CircularProgress from '@mui/material/CircularProgress';
@@ -18,7 +18,7 @@ import BasicModal from '../components/MUI/Modal';
 import ABI from "../ERC1155.json";
 import getNetworkFromChainId from '../utility/utils'
 const AdminPanel = ({ uploadNft, updateNFTData, jwt_token, isMetaMaskConnected }) => {
-
+    const navigate = useNavigate();
     const [success, setSuccess] = useState(false);
     const [enteredName, setEnteredName] = useState('');
     const [enteredCeleb, setEnteredCeleb] = useState("Random");
@@ -175,7 +175,8 @@ const AdminPanel = ({ uploadNft, updateNFTData, jwt_token, isMetaMaskConnected }
                     await updateNFTData(nftId, TOKENID, enteredAddress.toLowerCase(), network, "ERC721")
                     setprocessingMintNFT(false)
                     setmintNFTstatus(true)
-                    window.alert("NFT Minted Successfully!");
+                    window.alert(`NFT Minted Successfully!, Transaction Hash: ${response?.transactionHash}`)
+                    return navigate("/nft");
                     // console.log("Token ID: ", TOKENID);
                 }
             } catch (error) {
@@ -236,7 +237,8 @@ const AdminPanel = ({ uploadNft, updateNFTData, jwt_token, isMetaMaskConnected }
                     await updateNFTData(nftId, TOKENID, enteredAddress.toLowerCase(), network, "ERC1155", copies)
                     setprocessingMintNFT(false)
                     setmintNFTstatus(true)
-                    window.alert("NFT Minted Successfully!")
+                    window.alert(`NFT Minted Successfully!, Transaction Hash: ${response?.transactionHash}`)
+                    return navigate("/nft");
                     // console.log("Token ID: ", TOKENID);
                 }
             } catch (error) {

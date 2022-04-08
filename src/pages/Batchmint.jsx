@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useParams, Navigate } from 'react-router-dom';
+import { Link, useParams, Navigate, useNavigate } from 'react-router-dom';
 import { connect, useSelector } from "react-redux";
 import {FormControl, InputLabel, TextField, Button,TextareaAutosize, Alert, Select, MenuItem, Paper, TableContainer, Table, TableHead, TableRow, TableCell, TableBody} from "@mui/material";
 import CircularProgress from '@mui/material/CircularProgress';
@@ -23,7 +23,7 @@ import getNetworkFromChainId from '../utility/utils';
 
 //const tableHeaders=[{ id: 'fileName', label: 'File(s) Name', minWidth: 170 },{ id: 'nft_link', label: 'Link', minWidth: 170 },{ id: 'address_input', label: 'User Address', minWidth: 170 }]
 const Batchmint = ({ uploadNft, updateNFTData, jwt_token, isMetaMaskConnected }) => {
-
+    const navigate=useNavigate()
     const [success, setSuccess] = useState(false);
     const [enteredName, setEnteredName] = useState('');
     const [enteredCeleb, setEnteredCeleb] = useState("Random");
@@ -208,6 +208,7 @@ const [rowsPerPage, setRowsPerPage] = React.useState(5);
                 const nftIds=[]
                 if(Object.keys(enteredAddresses).length!==nftProcessedData.length || (ermint && (Object.keys(enteredCopies).length!==nftProcessedData.length)) ){
                     alert('All Addresses and copies must be filled')
+                    setprocessingMintNFT(false)
                 }else{
                     for (const [key, value] of Object.entries(enteredAddresses)) {
                         const contentHash=key.split('-')[2]
@@ -250,17 +251,22 @@ const [rowsPerPage, setRowsPerPage] = React.useState(5);
                         const response = await med.methods.batchMintByOwner(userAddresses,copies,urls).send({from:web3.eth.defaultAccount})
                         console.log('Response of batch mint ERC1155', response)
                         if(response?.status){
-                            const transferEvent = response?.events?.Transfer
+                            const transferEvent = response?.events?.TransferSingle
                             const chainID=await window.web3.eth.getChainId()
                             const network=getNetworkFromChainId(chainID)
                             //Optimise Currently, O(n^2)
                             for (let index=0; index<userAddresses.length; index++) {
-                                console.log('Transfer Return values are', transferEvent[index].returnValues)
-                                if(transferEvent[index].returnValues?.tokenId){
-                                    await updateNFTData(nftIds[index], transferEvent[index].returnValues?.tokenId, userAddresses[index], network, "ERC1155", copies[index])
+                                console.log('Transfer Return values are', transferEvent?.[index]?.returnValues)
+                                if(transferEvent[index].returnValues?.value){
+                                    await updateNFTData(nftIds[index], transferEvent[index].returnValues?.value, userAddresses[index], network, "ERC1155", copies[index])
                                 }
                             }
+                            setprocessingMintNFT(false)
+                            setmintNFTstatus(true)
+                            window.alert(`NFT(s) Minted Successfully!, Transaction Hash: ${response?.transactionHash}`)
+                            return navigate("/nft");
                         }
+                        setprocessingMintNFT(false)
                     }else{
                         const contract_address = "0x2496480d827E12aCAc35aA21a6Ec5b3D02e6816E";
                         //creating instance of smart contract
@@ -281,7 +287,8 @@ const [rowsPerPage, setRowsPerPage] = React.useState(5);
                             }
                             setprocessingMintNFT(false)
                             setmintNFTstatus(true)
-                            window.alert("NFT Minted Successfully!")
+                            window.alert(`NFT(s) Minted Successfully!, Transaction Hash: ${response?.transactionHash}`)
+                            return navigate("/nft");
                         }
                     }
                     setprocessingMintNFT(false)
